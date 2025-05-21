@@ -45,7 +45,7 @@ def run_calibration(win, hand='right', handedness='right'):
     )
     
     # Intro screen with non-dominant hand instruction
-    instr = (f"Get ready to press the {arrow_key.upper()} arrow key with your NON-DOMINANT ({physical_hand}) hand.\n\n"
+    instr = (f"Get ready to press the {arrow_key.upper()} arrow key with your NON-DOMINANT ({physical_hand}) pinky.\n\n"
              f"Press SPACE to begin.")
     
     text_stim = visual.TextStim(win, text=instr, color='white', height=0.05, wrapWidth=1.5)

@@ -1,5 +1,6 @@
 """
 config.py
+
 Global configuration parameters for the effort-based decision task experiment 
 """
 
@@ -9,12 +10,15 @@ N_TRIALS = 42
 # Number of catch trials
 N_CATCH_TRIALS = 3
 
-# Monetary magnitudes (placeholder list)
+# Monetary magnitudes 
 MONEY_MAGNITUDES = [
     1.00, 1.23, 1.46, 1.69, 1.92,
     2.15, 2.38, 2.61, 2.84, 3.07,
     3.30, 3.53, 3.76, 3.99, 4.00
 ]
+
+# Food magnitudes
+FOOD_MAGNITUDES = [1, 2, 3, 4]
 
 # Probabilities of loss
 PROBABILITIES = [0.12, 0.50, 0.88]
@@ -23,7 +27,9 @@ PROBABILITIES = [0.12, 0.50, 0.88]
 ITI_RANGE = (1.0, 2.0)
 
 # Click requirements
-EASY_CLICKS_REQUIRED = 30  # for practice
+EASY_CLICKS_REQUIRED = 30  # for easy task
+EASY_TASK_DURATION = 7.0   # seconds allowed for easy task
+HARD_TASK_DURATION = 21.0  # seconds allowed for hard task
 
 # Calibration duration for each key press block (in seconds)
 CALIBRATION_DURATION = 10.5
@@ -34,6 +40,3 @@ PRACTICE_TRIALS = [
     {'magnitude_hard': 2.50, 'prob': 0.50},
     {'magnitude_hard': 3.90, 'prob': 0.12},
 ]
-
-# TODO: Expand to full trial list as per spec
-# TODO: Add food domain parameters for the future

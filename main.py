@@ -9,7 +9,7 @@ import config
 from utils import setup_logging, save_data
 from subject_info import get_subject_info
 import calibration
-#import practice_trials
+import practice_trials
 #import real_trials
 
 def main():
@@ -36,7 +36,7 @@ def main():
     info = get_subject_info()
     logging.exp(f"Subject info: {info}")
     
-    # Initialize window 
+    # Initialize window - now with normal window instead of fullscreen
     win = visual.Window(
         fullscr=True,
         color='black',     
@@ -98,10 +98,38 @@ def main():
     all_data = []
     if info['practice_trials']:
         logging.exp('Running practice trials')
-        #practice_data = practice_trials.run(win, info)
-        #all_data.extend(practice_data)
-        # Placeholder for practice trials
-        pass
+        practice_data = practice_trials.run_practice_trials(win, info)
+        all_data.extend(practice_data)
+        
+        # After practice trials, show option to continue or repeat
+        practice_end_text = visual.TextStim(
+            win,
+            text=(
+                "End of practice trials. Please wait for the experimenter.\n\n"
+                "Press SPACE to begin experiment\n"
+                "Press ENTER to repeat practice trials"
+            ),
+            color='white', height=0.05, wrapWidth=1.5
+        )
+        
+        # Loop until participant chooses to continue
+        while True:
+            practice_end_text.draw()
+            win.flip()
+            
+            keys = event.waitKeys(keyList=['space', 'return', 'escape'])
+            
+            if 'escape' in keys:
+                win.close()
+                core.quit()
+            elif 'space' in keys:
+                # Continue to main experiment
+                break
+            elif 'return' in keys:
+                # Repeat practice trials
+                logging.exp('Repeating practice trials')
+                practice_data = practice_trials.run_practice_trials(win, info)
+                # Don't extend all_data here since we're just repeating
     else:
         logging.exp('Skipping practice trials')
     
