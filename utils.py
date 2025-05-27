@@ -30,11 +30,11 @@ def setup_logging(log_dir='logs'):
     log_filename = f"{log_dir}/experiment_{timestamp}.log"
     
     # Set up PsychoPy log file
-    logging.LogFile(log_filename, level=logging.EXP)
+    logging.LogFile(log_filename, level=logging.DATA) # Upped to DATA from EXP
     
     # Reduce console verbosity
     logging.console.setLevel(logging.WARNING)
-    logging.exp(f"Logging initialized. Log file: {log_filename}")
+    logging.data(f"[STRUCTURE] Logging initialized. Log file: {log_filename}")
 
 def save_data(filepath, data):
     """
@@ -68,4 +68,4 @@ def save_data(filepath, data):
         for row in data:
             writer.writerow(row)
             
-    logging.exp(f"Data saved to {filepath}")
+    logging.data(f"[STRUCTURE] Data saved to {filepath}")

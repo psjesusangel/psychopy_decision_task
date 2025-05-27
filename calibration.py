@@ -38,7 +38,7 @@ def run_calibration(win, hand='right', handedness='right'):
     # Add exit instruction text
     exit_instructions = visual.TextStim(
         win, 
-        text="To exit: Press Cmd+Q (macOS) or Alt+F4 (Windows)",
+        text="To exit: Press Cmd+Q (macOS) or Alt+F4 (Windows) or ESC key",
         pos=(0, -0.45),      # Position at bottom of screen
         height=0.025,        # Smaller text
         color='grey'         # Less prominent color
@@ -55,7 +55,7 @@ def run_calibration(win, hand='right', handedness='right'):
     
     # Wait for space press
     event.clearEvents()
-    logging.exp(f"Starting calibration for {arrow_key} key using {physical_hand} hand")
+    logging.data(f"[STRUCTURE] Starting calibration for {arrow_key} key using {physical_hand} hand")
     event.waitKeys(keyList=['space'])
     
     # 3–2–1–GO countdown
@@ -86,7 +86,7 @@ def run_calibration(win, hand='right', handedness='right'):
     # Calibration loop
     start_time = core.getTime()
     end_time = start_time + CALIBRATION_DURATION
-    logging.exp(f"Calibration started - Duration: {CALIBRATION_DURATION}s")
+    logging.data(f"[STRUCTURE] Calibration started - Duration: {CALIBRATION_DURATION}s")
     
     while core.getTime() < end_time:
         # Get current time
@@ -99,7 +99,7 @@ def run_calibration(win, hand='right', handedness='right'):
         if keys and not key_is_down:
             count += 1
             key_is_down = True
-            logging.exp(f"Key press: {arrow_key} - count now: {count}")
+            # logging.data(f"[DATA] Key press: {arrow_key} - count now: {count}")
         
         # If no keys are pressed, reset key_is_down
         if not keys:
@@ -120,7 +120,7 @@ def run_calibration(win, hand='right', handedness='right'):
         core.wait(0.001)
     
     # Log final count
-    logging.exp(f"Calibration completed - Final count: {count}")
+    logging.data(f"[STRUCTURE] Calibration completed - Final count: {count}")
     
     # Add a short pause after calibration
     text_stim.text = f"Calibration complete: {count} presses\n\nPress SPACE to continue."

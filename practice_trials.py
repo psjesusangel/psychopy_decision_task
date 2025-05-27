@@ -4,7 +4,7 @@ Module for running practice trials in the effort-based decision task.
 """
 import random
 from psychopy import visual, event, core, logging
-from config import EASY_CLICKS_REQUIRED
+from config import EASY_CLICKS_REQUIRED, PRACTICE_TRIALS
 
 def run_practice_trials(win, info):
     """
@@ -25,30 +25,40 @@ def run_practice_trials(win, info):
     hard_clicks_required = info['hard_clicks_required']
     dominant_hand = handedness.upper()
     
-    # Get non-dominant hand
+    # Get non-dominant hand --> Consider moving to main later
     non_dominant_hand = "LEFT" if dominant_hand == "RIGHT" else "RIGHT"
     
     # List to store trial data
     practice_data = []
     
-    # Run first practice trial
-    trial_data = run_practice_trial_1(win, non_dominant_hand, hard_clicks_required)
-    practice_data.append(trial_data)
-    
-    # Run second practice trial
-    
-    # Run third practice trial
+    # Run all three practice trials using config parameters
+    for trial_num, trial_config in enumerate(PRACTICE_TRIALS, 1):
+        trial_data = run_practice_trial(
+            win, 
+            trial_num, 
+            trial_config['prob'], 
+            trial_config['magnitude_hard'],
+            non_dominant_hand,
+            hard_clicks_required
+        )
+        practice_data.append(trial_data)
     
     # Return data from practice trials
     return practice_data
 
-def run_practice_trial_1(win, non_dominant_hand, hard_clicks_required):
+def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant_hand, hard_clicks_required):
     """
-    Run the first practice trial.
+    Run a single practice trial with given parameters.
     
     Parameters:
     win : psychopy.visual.Window
         Window to display stimuli
+    trial_num : int
+        Trial number (1, 2, or 3)
+    probability : float
+        Probability of loss
+    magnitude_hard : float
+        Magnitude for the hard option
     non_dominant_hand : str
         The participant's non-dominant hand
     hard_clicks_required : int
@@ -58,14 +68,10 @@ def run_practice_trial_1(win, non_dominant_hand, hard_clicks_required):
     dict
         Dictionary containing trial data
     """
-    # Set up trial parameters
-    trial_num = 1
-    probability = 0.88
-    magnitude_hard = 1.00
-    
     # Initialize trial data dictionary
     trial_data = {
         'trial_num': trial_num,
+        'trial_type': 'practice',
         'magnitude_hard': magnitude_hard,
         'probability': probability,
         'EV': magnitude_hard * probability,
@@ -76,7 +82,35 @@ def run_practice_trial_1(win, non_dominant_hand, hard_clicks_required):
         'task_complete': 0
     }
     
-    # Step 1: Fixation Cross with Practice Trial text
+    # Show fixation cross
+    show_fixation(win, trial_num)
+    
+    # Show choice screen and get response
+    choice, choice_rt = show_choice_screen(win, trial_num, probability, magnitude_hard)
+    trial_data['choice'] = choice
+    trial_data['choice_rt'] = choice_rt
+    
+    # Show ready screen
+    show_ready_screen(win)
+    
+    # Execute the chosen task
+    if choice == 'easy':
+        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, trial_num)
+        trial_data['n_clicks_required'] = EASY_CLICKS_REQUIRED
+    else:
+        task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num)
+        trial_data['n_clicks_required'] = hard_clicks_required
+    
+    trial_data['n_clicks_executed'] = clicks_executed
+    trial_data['task_complete'] = 1 if task_complete else 0
+    
+    # Show task completion status
+    show_completion_status(win, task_complete)
+    
+    return trial_data
+
+def show_fixation(win, trial_num):
+    """Show fixation cross with practice trial text."""
     fixation = visual.TextStim(win, text="+", height=0.08, color='white')
     trial_text = visual.TextStim(
         win, 
@@ -86,79 +120,145 @@ def run_practice_trial_1(win, non_dominant_hand, hard_clicks_required):
         color='white'
     )
     
-    # Draw fixation cross and trial text
     fixation.draw()
     trial_text.draw()
     win.flip()
-    
-    # Wait for 1 second
     core.wait(1.0)
+
+def show_choice_screen(win, trial_num, probability, magnitude_hard):
+    """
+    Display choice screen and get participant's response.
     
-    # Step 2: Choice screen
+    Returns:
+    (str, float)
+        Tuple of (choice, reaction_time)
+    """
+    # Create visual elements
+    elements = []
+    
+    # Trial header
     choice_text = visual.TextStim(
         win,
         text=f"Practice trial\n{trial_num}",
-        pos=(0, 0.3),
+        pos=(0, 0.35),
         height=0.05,
         color='white'
     )
+    elements.append(choice_text)
     
+    # Gray background box for choices
+    choice_bg = visual.Rect(
+        win,
+        width=1.4,
+        height=0.5,
+        fillColor=[0.2, 0.2, 0.2],
+        pos=(0, -0.1)
+    )
+    elements.append(choice_bg)
+    
+    # "Please choose a task:" text
     instructions = visual.TextStim(
         win,
         text="Please choose a task:",
-        pos=(0, 0.2),
-        height=0.05,
-        color='white'
-    )
-    
-    left_key_text = visual.TextStim(
-        win,
-        text="(left arrow key)",
-        pos=(-0.3, -0.1),
-        height=0.03,
-        color='white'
-    )
-    
-    right_key_text = visual.TextStim(
-        win,
-        text="(right arrow key)",
-        pos=(0.3, -0.1),
-        height=0.03,
-        color='white'
-    )
-    
-    probability_text = visual.TextStim(
-        win,
-        text=f"Probability of loss: {int(probability * 100)}%",
-        pos=(0, -0.2),
+        pos=(0, 0.1),
         height=0.04,
         color='white'
     )
+    elements.append(instructions)
     
-    easy_option = visual.TextStim(
+    # Probability text
+    probability_text = visual.TextStim(
         win,
-        text="Easy\n-$4",
-        pos=(-0.3, 0),
-        height=0.05,
+        text=f"Probability of loss: {int(probability * 100)}%",
+        pos=(0, 0.0),
+        height=0.035,
         color='white'
     )
+    elements.append(probability_text)
     
-    hard_option = visual.TextStim(
+    # Easy option box
+    easy_box = visual.Rect(
         win,
-        text=f"Hard\n-${magnitude_hard:.2f}",
-        pos=(0.3, 0),
-        height=0.05,
+        width=0.35,
+        height=0.18,
+        fillColor=[0.6, 0.6, 0.6],
+        lineColor='white',
+        lineWidth=1,
+        pos=(-0.35, -0.15)
+    )
+    elements.append(easy_box)
+    
+    easy_label = visual.TextStim(
+        win,
+        text="Easy",
+        pos=(-0.35, -0.10),
+        height=0.035,
+        color='black',
+        bold=True
+    )
+    elements.append(easy_label)
+    
+    easy_value = visual.TextStim(
+        win,
+        text="-$4",
+        pos=(-0.35, -0.20),
+        height=0.04,
+        color='black'
+    )
+    elements.append(easy_value)
+    
+    easy_key = visual.TextStim(
+        win,
+        text="(left arrow key)",
+        pos=(-0.35, -0.28),
+        height=0.025,
         color='white'
     )
+    elements.append(easy_key)
     
-    # Draw choice screen
-    choice_text.draw()
-    instructions.draw()
-    left_key_text.draw()
-    right_key_text.draw()
-    probability_text.draw()
-    easy_option.draw()
-    hard_option.draw()
+    # Hard option box
+    hard_box = visual.Rect(
+        win,
+        width=0.35,
+        height=0.18,
+        fillColor=[0.6, 0.6, 0.6],
+        lineColor='white',
+        lineWidth=1,
+        pos=(0.35, -0.15)
+    )
+    elements.append(hard_box)
+    
+    hard_label = visual.TextStim(
+        win,
+        text="Hard",
+        pos=(0.35, -0.10),
+        height=0.035,
+        color='black',
+        bold=True
+    )
+    elements.append(hard_label)
+    
+    hard_value = visual.TextStim(
+        win,
+        text=f"-${magnitude_hard:.2f}",
+        pos=(0.35, -0.20),
+        height=0.04,
+        color='black'
+    )
+    elements.append(hard_value)
+    
+    hard_key = visual.TextStim(
+        win,
+        text="(right arrow key)",
+        pos=(0.35, -0.28),
+        height=0.025,
+        color='white'
+    )
+    elements.append(hard_key)
+    
+    # Draw all elements
+    for element in elements:
+        element.draw()
     win.flip()
     
     # Wait for response and record time
@@ -174,60 +274,43 @@ def run_practice_trial_1(win, non_dominant_hand, hard_clicks_required):
     # Record choice and reaction time
     choice = 'easy' if choice_keys[0] == 'left' else 'hard'
     choice_rt = choice_end_time - choice_start_time
-
-    trial_data['choice'] = choice
-    trial_data['choice_rt'] = choice_rt
-
-    # Confirmation highlight
+    
+    # Show confirmation with red border
     border_box = visual.Rect(
         win,
         width=0.35,
         height=0.18,
+        fillColor=None,
         lineColor='red',
-        lineWidth=4,
-        pos=(-0.3, 0) if choice == 'easy' else (0.3, 0)
+        lineWidth=3,
+        pos=(-0.35, -0.15) if choice == 'easy' else (0.35, -0.15)
     )
-
-    # Redraw same screen with highlight
-    choice_text.draw()
-    instructions.draw()
-    left_key_text.draw()
-    right_key_text.draw()
-    probability_text.draw()
-    easy_option.draw()
-    hard_option.draw()
+    
+    # Redraw everything with highlight
+    for element in elements:
+        element.draw()
     border_box.draw()
     win.flip()
+    
+    # Brief pause to show selection
+    core.wait(0.5)
+    
+    return choice, choice_rt
 
-    # Wait for 1 second to confirm selection visually
-    core.wait(1.0)
-
-    # Step 3: Ready screen
+def show_ready_screen(win):
+    """Display ready screen."""
     ready_text = visual.TextStim(
         win,
         text="Ready?",
         height=0.08,
         color='white'
     )
-    
     ready_text.draw()
     win.flip()
-    
-    # Wait for 1 second
     core.wait(1.0)
-    
-    # Step 4: Execute the chosen task
-    if choice == 'easy':
-        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, trial_num)
-        trial_data['n_clicks_required'] = EASY_CLICKS_REQUIRED
-    else:
-        task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num)
-        trial_data['n_clicks_required'] = hard_clicks_required
-    
-    trial_data['n_clicks_executed'] = clicks_executed
-    trial_data['task_complete'] = 1 if task_complete else 0
-    
-    # Step 5: Show task completion status
+
+def show_completion_status(win, task_complete):
+    """Display task completion status."""
     status_text = "complete" if task_complete else "incomplete"
     completion_text = visual.TextStim(
         win,
@@ -235,14 +318,9 @@ def run_practice_trial_1(win, non_dominant_hand, hard_clicks_required):
         height=0.08,
         color='white'
     )
-    
     completion_text.draw()
     win.flip()
-    
-    # Wait for 2 seconds
     core.wait(2.0)
-    
-    return trial_data
 
 def run_easy_task(win, non_dominant_hand, trial_num):
     """
@@ -265,38 +343,20 @@ def run_easy_task(win, non_dominant_hand, trial_num):
     task_complete = False
     task_duration = 7.0  # 7 seconds for easy task
     
-    # Create VERTICAL progress bar (shorter)
+    # Create visual elements that don't change
     progress_bar_back = visual.Rect(
         win,
         width=0.1,
-        height=0.6,  # Shortened from 0.8
+        height=0.6,
         fillColor='darkgrey',
         lineColor='white',
         pos=(0, 0)
     )
     
-    progress_bar_fill = visual.Rect(
-        win,
-        width=0.1,
-        height=0,  # Starts at 0
-        fillColor='blue',
-        lineColor=None,
-        pos=(0, -0.3),  # Bottom-aligned (adjusted for shorter bar)
-    )
-    
-    # Create instruction text
     instruction_text = visual.TextStim(
         win,
         text=f"Practice trial {trial_num}\n(easy task)",
-        pos=(0, 0.4),  # Adjusted position
-        height=0.05,
-        color='white'
-    )
-    
-    progress_text = visual.TextStim(
-        win,
-        text="0%",
-        pos=(0.15, 0),  # To the right of bar
+        pos=(0, 0.4),
         height=0.05,
         color='white'
     )
@@ -304,17 +364,8 @@ def run_easy_task(win, non_dominant_hand, trial_num):
     task_text = visual.TextStim(
         win,
         text=f"Press the space bar with your {non_dominant_hand} index finger",
-        pos=(0, -0.4),  # Adjusted position
+        pos=(0, -0.4),
         height=0.05,
-        color='white'
-    )
-    
-    # Create timer text (bottom right corner)
-    timer_text = visual.TextStim(
-        win,
-        text=f"{task_duration:.1f}s",
-        pos=(0.8, -0.8),  # Bottom right corner
-        height=0.04,
         color='white'
     )
     
@@ -339,20 +390,38 @@ def run_easy_task(win, non_dominant_hand, trial_num):
         if 'space' in keys:
             clicks_executed += 1
             
-        # Calculate progress (0 to 1)        
+        # Calculate progress
         progress = min(1.0, clicks_executed / EASY_CLICKS_REQUIRED)
-        new_height = 0.6 * progress  # Adjusted for shorter bar
+        new_height = 0.6 * progress
         
-        # Update progress bar (grows from bottom to top)
-        progress_bar_fill.height = new_height
-        progress_bar_fill.pos = (0, -0.3 + new_height/2)  # Adjust y position as it grows
+        # Update progress bar
+        progress_bar_fill = visual.Rect(
+            win,
+            width=0.1,
+            height=new_height,
+            fillColor='blue',
+            lineColor=None,
+            pos=(0, -0.3 + new_height/2)
+        )
         
         # Update progress text
-        progress_text.text = f"{int(progress * 100)}%"
+        progress_text = visual.TextStim(
+            win,
+            text=f"{int(progress * 100)}%",
+            pos=(0.15, 0),
+            height=0.05,
+            color='white'
+        )
         
         # Update timer
         time_remaining = max(0, end_time - core.getTime())
-        timer_text.text = f"{time_remaining:.1f}s"
+        timer_text = visual.TextStim(
+            win,
+            text=f"{time_remaining:.1f}s",
+            pos=(0.8, -0.8),
+            height=0.04,
+            color='white'
+        )
         
         # Draw elements
         instruction_text.draw()
@@ -393,8 +462,6 @@ def run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num):
     # Initialize variables
     right_clicks = 0
     left_clicks = 0
-    total_clicks = 0
-    task_complete = False
     task_duration = 21.0  # 21 seconds for hard task
     clicks_per_side = hard_clicks_required // 2  # Split between left and right
     
@@ -406,53 +473,100 @@ def run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num):
     end_time = start_time + task_duration
     
     # Phase 1: RIGHT arrow key
-    while core.getTime() < end_time and right_clicks < clicks_per_side:
-        # Create VERTICAL progress bar (shorter)
-        progress_bar_back = visual.Rect(
-            win,
-            width=0.1,
-            height=0.6,  # Shortened from 0.8
-            fillColor='darkgrey',
-            lineColor='white',
-            pos=(0, 0)
+    task_complete_right = execute_hard_task_phase(
+        win, 'right', 'RIGHT', right_clicks, clicks_per_side, 
+        trial_num, non_dominant_hand, end_time
+    )
+    right_clicks = task_complete_right[1]
+    
+    # Phase 2: LEFT arrow key (if time remains and right clicks completed)
+    if right_clicks >= clicks_per_side and core.getTime() < end_time:
+        task_complete_left = execute_hard_task_phase(
+            win, 'left', 'LEFT', left_clicks, clicks_per_side,
+            trial_num, non_dominant_hand, end_time
         )
+        left_clicks = task_complete_left[1]
+    
+    # Calculate total clicks and completion status
+    total_clicks = right_clicks + left_clicks
+    task_complete = (right_clicks >= clicks_per_side and left_clicks >= clicks_per_side)
+    
+    return task_complete, total_clicks
+
+def execute_hard_task_phase(win, key_name, key_display, current_clicks, required_clicks, 
+                           trial_num, non_dominant_hand, end_time):
+    """
+    Execute one phase (LEFT or RIGHT) of the hard task.
+    
+    Returns:
+    (bool, int)
+        Tuple of (phase_complete, clicks_executed)
+    """
+    clicks = current_clicks
+    
+    # Create visual elements that don't change
+    progress_bar_back = visual.Rect(
+        win,
+        width=0.1,
+        height=0.6,
+        fillColor='darkgrey',
+        lineColor='white',
+        pos=(0, 0)
+    )
+    
+    instruction_text = visual.TextStim(
+        win,
+        text=f"Practice trial {trial_num}\n(hard task)",
+        pos=(0, 0.4),
+        height=0.05,
+        color='white'
+    )
+    
+    task_text = visual.TextStim(
+        win,
+        text=f"Press the {key_display} arrow key with your {non_dominant_hand} pinky finger",
+        pos=(0, -0.4),
+        height=0.05,
+        color='white'
+    )
+    
+    while core.getTime() < end_time and clicks < required_clicks:
+        # Check for keypresses
+        keys = event.getKeys(keyList=[key_name, 'escape'])
         
+        # Check for escape key
+        if 'escape' in keys:
+            win.close()
+            core.quit()
+            
+        # Count arrow presses
+        if key_name in keys:
+            clicks += 1
+        
+        # Calculate progress
+        progress = min(1.0, clicks / required_clicks)
+        new_height = 0.6 * progress
+        
+        # Update progress bar
         progress_bar_fill = visual.Rect(
             win,
             width=0.1,
-            height=0.6 * (right_clicks / clicks_per_side),
+            height=new_height,
             fillColor='blue',
             lineColor=None,
-            pos=(0, -0.3 + (0.6 * (right_clicks / clicks_per_side) / 2)),
-            anchor='center'
+            pos=(0, -0.3 + new_height/2)
         )
         
-        # Create instruction text
-        instruction_text = visual.TextStim(
-            win,
-            text=f"Practice trial {trial_num}\n(hard task)",
-            pos=(0, 0.4),
-            height=0.05,
-            color='white'
-        )
-        
+        # Update progress text
         progress_text = visual.TextStim(
             win,
-            text=f"{int((right_clicks / clicks_per_side) * 100)}%",
+            text=f"{int(progress * 100)}%",
             pos=(0.15, 0),
             height=0.05,
             color='white'
         )
         
-        task_text = visual.TextStim(
-            win,
-            text=f"Press the RIGHT arrow key with your {non_dominant_hand} pinky finger",
-            pos=(0, -0.4),
-            height=0.05,
-            color='white'
-        )
-        
-        # Create timer text (bottom right corner)
+        # Update timer
         time_remaining = max(0, end_time - core.getTime())
         timer_text = visual.TextStim(
             win,
@@ -471,107 +585,8 @@ def run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num):
         timer_text.draw()
         win.flip()
         
-        # Check for keypresses
-        keys = event.getKeys(keyList=['right', 'escape'])
-        
-        # Check for escape key
-        if 'escape' in keys:
-            win.close()
-            core.quit()
-            
-        # Count right arrow presses
-        if 'right' in keys:
-            right_clicks += 1
-        
         # Brief wait to prevent CPU hogging
         core.wait(0.001)
     
-    # Phase 2: LEFT arrow key (if time remains and right clicks completed)
-    if right_clicks >= clicks_per_side:
-        while core.getTime() < end_time and left_clicks < clicks_per_side:
-            # Create VERTICAL progress bar (shorter)
-            progress_bar_back = visual.Rect(
-                win,
-                width=0.1,
-                height=0.6,  # Shortened from 0.8
-                fillColor='darkgrey',
-                lineColor='white',
-                pos=(0, 0)
-            )
-            
-            progress_bar_fill = visual.Rect(
-                win,
-                width=0.1,
-                height=0.6 * (left_clicks / clicks_per_side),
-                fillColor='blue',
-                lineColor=None,
-                pos=(0, -0.3 + (0.6 * (left_clicks / clicks_per_side) / 2)),
-                anchor='center'
-            )
-            
-            # Create instruction text
-            instruction_text = visual.TextStim(
-                win,
-                text=f"Practice trial {trial_num}\n(hard task)",
-                pos=(0, 0.4),
-                height=0.05,
-                color='white'
-            )
-            
-            progress_text = visual.TextStim(
-                win,
-                text=f"{int((left_clicks / clicks_per_side) * 100)}%",
-                pos=(0.15, 0),
-                height=0.05,
-                color='white'
-            )
-            
-            task_text = visual.TextStim(
-                win,
-                text=f"Press the LEFT arrow key with your {non_dominant_hand} pinky finger",
-                pos=(0, -0.4),
-                height=0.05,
-                color='white'
-            )
-            
-            # Create timer text (bottom right corner)
-            time_remaining = max(0, end_time - core.getTime())
-            timer_text = visual.TextStim(
-                win,
-                text=f"{time_remaining:.1f}s",
-                pos=(0.8, -0.8),
-                height=0.04,
-                color='white'
-            )
-            
-            # Draw elements
-            instruction_text.draw()
-            progress_bar_back.draw()
-            progress_bar_fill.draw()
-            progress_text.draw()
-            task_text.draw()
-            timer_text.draw()
-            win.flip()
-            
-            # Check for keypresses
-            keys = event.getKeys(keyList=['left', 'escape'])
-            
-            # Check for escape key
-            if 'escape' in keys:
-                win.close()
-                core.quit()
-                
-            # Count left arrow presses
-            if 'left' in keys:
-                left_clicks += 1
-            
-            # Brief wait to prevent CPU hogging
-            core.wait(0.001)
-    
-    # Calculate total clicks executed
-    total_clicks = right_clicks + left_clicks
-    
-    # Check if task was completed
-    task_complete = (right_clicks >= clicks_per_side and left_clicks >= clicks_per_side)
-    
-    return task_complete, total_clicks
+    phase_complete = clicks >= required_clicks
+    return phase_complete, clicks

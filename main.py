@@ -31,24 +31,24 @@ def main():
     """
     # Setup logging
     setup_logging()
-    logging.exp('Starting experiment')
+    logging.data('Starting experiment')
     
     # Collect subject info
     info = get_subject_info()
     logging.exp(f"Subject info: {info}")
     
-    # Initialize window - now with normal window instead of fullscreen
+    # Initialize window 
     win = visual.Window(
         fullscr=True,
         color='black',     
         units='height',      
-        allowGUI=True        # Allow GUI elements including close button
+        allowGUI=True        
     )
     
     # Add text indicating exit options
     exit_instructions = visual.TextStim(
         win, 
-        text="To exit: Press Cmd+Q (macOS) or Alt+F4 (Windows)",
+        text="To exit: Press Cmd+Q (macOS) or Alt+F4 (Windows) or ESC key",
         pos=(0, -0.45),      # Position at bottom of screen
         height=0.025,        # Smaller text
         color='grey'         # Less prominent color
@@ -58,23 +58,23 @@ def main():
     handedness = info['handedness'].lower()
     
     # Calibration phase
-    logging.exp('Running right-hand calibration')
+    logging.data('[STRUCTURE] Running right-hand calibration')
     
     # Show exit instructions on each screen
     exit_instructions.draw()
     
     # Run the calibration with non-dominant hand (based on handedness)
     right_count = calibration.run_calibration(win, hand='right', handedness=handedness)
-    logging.exp(f'Right-key clicks: {right_count}')
+    logging.data(f'[DATA] Right-key clicks: {right_count}')
     
-    logging.exp('Running left-hand calibration')
+    logging.data('[STRUCTURE] Running left-hand calibration')
     left_count = calibration.run_calibration(win, hand='left', handedness=handedness)
-    logging.exp(f'Left-key clicks: {left_count}')
+    logging.data(f'[DATA] Left-key clicks: {left_count}')
     
     # Compute hard click requirement (0.8 * sum of both hands)
     hard_clicks_required = int(0.8 * (right_count + left_count))
     info['hard_clicks_required'] = hard_clicks_required
-    logging.exp(f'Hard clicks required: {hard_clicks_required}')
+    logging.data(f'[DATA] Hard clicks required: {hard_clicks_required}')
     
     # Display summary of calibration
     summary = visual.TextStim(
@@ -95,14 +95,15 @@ def main():
     # Wait for space after calibration summary
     event.waitKeys(keyList=['space'])
     
-    # Run instructions
-    logging.exp('Running instructions')
-    instructions.run_instructions(win, info)
+    # Skipping during testing to go faster
+#    # Run instructions
+#    logging.exp('Running instructions')
+#    instructions.run_instructions(win, info)
     
     # Practice trials
     all_data = []
     if info['practice_trials']:
-        logging.exp('Running practice trials')
+        logging.data('[STRUCTURE] Running practice trials')
         practice_data = practice_trials.run_practice_trials(win, info)
         all_data.extend(practice_data)
         
@@ -132,14 +133,14 @@ def main():
                 break
             elif 'return' in keys:
                 # Repeat practice trials
-                logging.exp('Repeating practice trials')
+                logging.data('[STRUCTURE] Repeating practice trials')
                 practice_data = practice_trials.run_practice_trials(win, info)
                 # Don't extend all_data here since we're just repeating
     else:
-        logging.exp('Skipping practice trials')
+        logging.data('[STRUCTURE] Skipping practice trials')
     
     # Main experiment
-    logging.exp('Running main experimental trials')
+    logging.data('[STRUCTURE] Running main experimental trials')
     #real_data = real_trials.run(win, info)
     #all_data.extend(real_data)
     # Placeholder for main trials
@@ -152,7 +153,7 @@ def main():
     # Save data to /data folder
     output_path = os.path.join(data_dir, info['filename'])
     #save_data(output_path, all_data)
-    logging.exp(f'Data saved to {output_path}')
+    logging.data(f'[STRUCTURE] Data saved to {output_path}')
     
     # Show completion message
     completion = visual.TextStim(
