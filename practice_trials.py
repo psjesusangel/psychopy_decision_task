@@ -170,14 +170,38 @@ def run_practice_trial_1(win, non_dominant_hand, hard_clicks_required):
     if 'escape' in choice_keys:
         win.close()
         core.quit()
-    
+        
     # Record choice and reaction time
     choice = 'easy' if choice_keys[0] == 'left' else 'hard'
     choice_rt = choice_end_time - choice_start_time
-    
+
     trial_data['choice'] = choice
     trial_data['choice_rt'] = choice_rt
-    
+
+    # Confirmation highlight
+    border_box = visual.Rect(
+        win,
+        width=0.35,
+        height=0.18,
+        lineColor='red',
+        lineWidth=4,
+        pos=(-0.3, 0) if choice == 'easy' else (0.3, 0)
+    )
+
+    # Redraw same screen with highlight
+    choice_text.draw()
+    instructions.draw()
+    left_key_text.draw()
+    right_key_text.draw()
+    probability_text.draw()
+    easy_option.draw()
+    hard_option.draw()
+    border_box.draw()
+    win.flip()
+
+    # Wait for 1 second to confirm selection visually
+    core.wait(1.0)
+
     # Step 3: Ready screen
     ready_text = visual.TextStim(
         win,

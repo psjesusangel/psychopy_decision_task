@@ -9,6 +9,7 @@ import config
 from utils import setup_logging, save_data
 from subject_info import get_subject_info
 import calibration
+import instructions
 import practice_trials
 #import real_trials
 
@@ -91,8 +92,12 @@ def main():
     exit_instructions.draw()
     win.flip()
     
-    # Check for space to continue
+    # Wait for space after calibration summary
     event.waitKeys(keyList=['space'])
+    
+    # Run instructions
+    logging.exp('Running instructions')
+    instructions.run_instructions(win, info)
     
     # Practice trials
     all_data = []

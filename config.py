@@ -32,7 +32,7 @@ EASY_TASK_DURATION = 7.0   # seconds allowed for easy task
 HARD_TASK_DURATION = 21.0  # seconds allowed for hard task
 
 # Calibration duration for each key press block (in seconds)
-CALIBRATION_DURATION = 10.5
+CALIBRATION_DURATION = 2 # TODO: should be 10.5, 2 rn for testing purposes
 
 # Practice trials configuration (monetary only)
 PRACTICE_TRIALS = [
@@ -40,3 +40,55 @@ PRACTICE_TRIALS = [
     {'magnitude_hard': 2.50, 'prob': 0.50},
     {'magnitude_hard': 3.90, 'prob': 0.12},
 ]
+
+# Might be unnecessary since they are bound to happen anyway
+CATCH_TRIAL_CONFIGS = {
+    'Loss': {
+        'easy_value': 4.00,
+        'hard_value': 4.00,  # Same as easy - irrational to choose hard
+        'probability': 0.50
+    },
+    'Gain': {
+        'easy_value': 1.00,
+        'hard_value': 1.00,  # Same as easy - irrational to choose hard
+        'probability': 0.50
+    }
+}
+
+# Task parameters shown in instructions
+ENDOWMENT_MONEY = 8
+ENDOWMENT_MONEY = 8
+ENDOWMENT_FOOD = 8
+INCOMPLETE_TASK_PENALTY = 4.00
+
+# Values for different conditions
+LOSS_EASY_VALUE = 4.00
+LOSS_HARD_VALUE = 2.50
+GAIN_EASY_VALUE = 2.50
+GAIN_HARD_VALUE = 4.00
+
+# Example probabilities shown in instructions
+EXAMPLE_LOW_PROB = 12
+EXAMPLE_HIGH_PROB = 88
+
+# Text sizes
+TITLE_HEIGHT = 0.06
+MAIN_TEXT_HEIGHT = 0.04
+SMALL_TEXT_HEIGHT = 0.035
+TINY_TEXT_HEIGHT = 0.025
+
+# Colors (in PsychoPy -1 to 1 format)
+BACKGROUND_COLOR = 'black'
+TEXT_COLOR = 'white'
+INSTRUCTION_COLOR = 'yellow'
+BOX_FILL_COLOR = [0.6, 0.6, 0.6]
+CHOICE_BG_COLOR = [0.2, 0.2, 0.2]
+HIGHLIGHT_COLOR = 'red'
+PROGRESS_FILL_COLOR = 'green'
+
+# Layout dimensions
+CHOICE_BOX_WIDTH = 0.35
+CHOICE_BOX_HEIGHT = 0.18
+CHOICE_BOX_SEPARATION = 0.7
+PROGRESS_BAR_WIDTH = 0.8
+PROGRESS_BAR_HEIGHT = 0.08
