@@ -5,7 +5,7 @@ Global configuration parameters for the effort-based decision task experiment
 """
 
 # Number of trials per block (not currently used in practice trials)
-N_TRIALS = 42
+N_REAL_TRIALS = 39
 
 # Number of catch trials
 N_CATCH_TRIALS = 3
@@ -56,7 +56,6 @@ CATCH_TRIAL_CONFIGS = {
 }
 
 # Task parameters shown in instructions
-ENDOWMENT_MONEY = 8
 ENDOWMENT_MONEY = 8
 ENDOWMENT_FOOD = 8
 INCOMPLETE_TASK_PENALTY = 4.00

@@ -11,7 +11,7 @@ from subject_info import get_subject_info
 import calibration
 import instructions
 import practice_trials
-#import real_trials
+from real_trials import run_real_trials
 
 def main():
     """
@@ -141,9 +141,8 @@ def main():
     
     # Main experiment
     logging.data('[STRUCTURE] Running main experimental trials')
-    #real_data = real_trials.run(win, info)
-    #all_data.extend(real_data)
-    # Placeholder for main trials
+    real_data = run_real_trials(win, info)
+    all_data.extend(real_data)
     
     # Create data directory if it doesn't exist
     data_dir = os.path.join(os.getcwd(), 'data')
@@ -152,7 +151,7 @@ def main():
     
     # Save data to /data folder
     output_path = os.path.join(data_dir, info['filename'])
-    #save_data(output_path, all_data)
+    save_data(output_path, all_data)
     logging.data(f'[STRUCTURE] Data saved to {output_path}')
     
     # Show completion message

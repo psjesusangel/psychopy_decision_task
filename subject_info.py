@@ -75,21 +75,24 @@ def get_subject_info():
     
     # Convert and finalize
     sub_num = int(snum)
-    date_str = datetime.now().strftime('%Y%m%d')
-    base_name = f"{date_str}_sub{sub_num:03d}.csv"
+    domain_abbr = 'M' if domain == 'Money' else 'F'
+    valence_abbr = 'G' if valence == 'Gain' else 'L'
+    
+    # Create filename following spec: [subject number]_[domain]_[valence].csv
+    base_name = f"{sub_num}_{domain_abbr}_{valence_abbr}.csv"
     filename = base_name
     counter = 1
     
-    # Avoid overwrite by appending _1, _2, etc.
+    # Avoid overwrite by appending 1, 2, etc.
     data_dir = os.path.join(os.getcwd(), 'data')
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
         
     while os.path.exists(os.path.join(data_dir, filename)):
-        filename = f"{date_str}_sub{sub_num:03d}_{counter}.csv"
+        filename = f"{sub_num}_{domain_abbr}_{valence_abbr}_{counter}.csv"
         counter += 1
     
-    logging.exp(f"Subject info collected: ID={sub_num}, domain={domain}, valence={valence}")
+    logging.data(f"[INFO] Subject info collected: ID={sub_num}, domain={domain}, valence={valence}")
     
     return {
         'subject_number': sub_num,
