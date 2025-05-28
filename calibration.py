@@ -2,7 +2,6 @@
 calibration.py
 Module to calibrate hand presses.
 """
-
 from psychopy import visual, event, core, logging
 from config import CALIBRATION_DURATION
 

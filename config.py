@@ -1,6 +1,5 @@
 """
 config.py
-
 Global configuration parameters for the effort-based decision task experiment 
 """
 

@@ -250,11 +250,12 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     show_ready_screen(win)
     
     # Execute the chosen task
+    # TODO: None for third arg, can show trial number though
     if choice == 'easy':
-        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, f"Experiment\n(easy task)")
+        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, None)
         trial_data['n_clicks_required'] = EASY_CLICKS_REQUIRED
     else:
-        task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required, f"Experiment\n(hard task)")
+        task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required, None)
         trial_data['n_clicks_required'] = hard_clicks_required
     
     trial_data['n_clicks_executed'] = clicks_executed
@@ -431,9 +432,8 @@ def show_experiment_choice_screen(win, trial_num, probability, magnitude_hard, e
     
     # Check for escape key
     if 'escape' in choice_keys:
-        logging.info('User pressed escape during experiment')
-        win.close()
-        core.quit()
+        logging.warning('User pressed escape during experiment')
+        raise KeyboardInterrupt("User pressed escape during trial")
         
     # Record choice and reaction time
     choice = 'easy' if choice_keys[0] == 'left' else 'hard'

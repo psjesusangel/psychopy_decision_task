@@ -1,0 +1,4 @@
+trial_num,magnitude_hard,probability,EV,choice,choice_rt,n_clicks_required,n_clicks_executed,task_complete,trial_type,partial_data,termination_reason
+1,1.0,0.88,0.88,easy,1.432063083993853,30,30,1,practice,,
+2,2.5,0.5,1.25,hard,0.718844832998002,20,20,1,practice,,
+3,3.9,0.12,0.46799999999999997,hard,0.5494329159992049,20,20,1,practice,True,Unexpected error: run_easy_task() missing 1 required positional argument: 'trial_num'

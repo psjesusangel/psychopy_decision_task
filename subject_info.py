@@ -2,7 +2,6 @@
 subject_info.py
 Module to collect and validate participant information via PsychoPy GUI.
 """
-
 import os
 from datetime import datetime
 from psychopy import gui, logging, core

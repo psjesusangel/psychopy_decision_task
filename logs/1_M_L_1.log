@@ -1,0 +1,137 @@
+18.7824 	WARNING 	Font Manager failed to load file /System/Library/PrivateFrameworks/FontServices.framework/Resources/Reserved/PingFangUI.ttc
+35.6836 	DATA 	[STRUCTURE] Logging initialized. Log file: logs/1_M_L_1.log
+35.6836 	DATA 	Starting experiment
+35.6935 	WARNING 	Monitor specification not found. Creating a temporary one...
+35.7401 	WARNING 	User requested fullscreen with size [800 600], but screen is actually [1440, 900]. Using actual size
+37.4289 	WARNING 	Couldn't measure a consistent frame rate!
+  - Is your graphics card set to sync to vertical blank?
+  - Are you running other processes on your computer?
+
+37.4750 	DATA 	[STRUCTURE] Running right-hand calibration
+37.4954 	WARNING 	t of last frame was 66.76ms (=1/14)
+37.4964 	DATA 	[STRUCTURE] Starting calibration for right key using LEFT hand
+38.3028 	DATA 	Keypress: space
+38.3260 	WARNING 	t of last frame was 830.63ms (=1/1)
+39.3890 	WARNING 	t of last frame was 1063.04ms (=1/0)
+40.3948 	WARNING 	t of last frame was 1005.71ms (=1/0)
+41.4041 	WARNING 	Multiple dropped frames have occurred - I'll stop bothering you about them!
+41.9128 	DATA 	[STRUCTURE] Calibration started - Duration: 2s
+42.5585 	DATA 	Keypress: right
+42.6203 	DATA 	Keypress: right
+42.9150 	DATA 	Keypress: right
+43.0781 	DATA 	Keypress: right
+43.1974 	DATA 	Keypress: right
+43.3988 	DATA 	Keypress: right
+43.5505 	DATA 	Keypress: right
+43.6797 	DATA 	Keypress: right
+43.8203 	DATA 	Keypress: right
+43.9128 	DATA 	[STRUCTURE] Calibration completed - Final count: 9
+43.9482 	DATA 	Keypress: right
+44.1091 	DATA 	Keypress: right
+44.6066 	DATA 	Keypress: space
+44.6076 	DATA 	[DATA] Right-key clicks: 9
+44.6076 	DATA 	[STRUCTURE] Running left-hand calibration
+44.6303 	DATA 	[STRUCTURE] Starting calibration for left key using LEFT hand
+45.2666 	DATA 	Keypress: space
+45.5335 	DATA 	Keypress: left
+45.7520 	DATA 	Keypress: left
+48.4335 	DATA 	Keypress: left
+48.5629 	DATA 	Keypress: left
+48.7035 	DATA 	Keypress: left
+48.7939 	DATA 	[STRUCTURE] Calibration started - Duration: 2s
+48.8498 	DATA 	Keypress: left
+48.9950 	DATA 	Keypress: left
+49.1299 	DATA 	Keypress: left
+49.2807 	DATA 	Keypress: left
+49.4137 	DATA 	Keypress: left
+49.5642 	DATA 	Keypress: left
+49.7135 	DATA 	Keypress: left
+49.8637 	DATA 	Keypress: left
+50.0122 	DATA 	Keypress: left
+50.1524 	DATA 	Keypress: left
+50.2962 	DATA 	Keypress: left
+50.4468 	DATA 	Keypress: left
+50.6353 	DATA 	Keypress: left
+50.7966 	DATA 	[STRUCTURE] Calibration completed - Final count: 13
+50.8271 	DATA 	Keypress: left
+51.0421 	DATA 	Keypress: left
+51.6401 	DATA 	Keypress: space
+51.6407 	DATA 	[DATA] Left-key clicks: 13
+51.6407 	DATA 	[DATA] Hard clicks required: 17
+53.3805 	DATA 	Keypress: space
+53.3809 	DATA 	[STRUCTURE] Skipping practice trials
+53.3809 	DATA 	[STRUCTURE] Running main experimental trials
+56.8247 	DATA 	Keypress: left
+58.9368 	DATA 	Keypress: space
+59.1283 	DATA 	Keypress: space
+59.2844 	DATA 	Keypress: space
+59.4347 	DATA 	Keypress: space
+59.6033 	DATA 	Keypress: space
+59.7839 	DATA 	Keypress: space
+59.9503 	DATA 	Keypress: space
+60.0866 	DATA 	Keypress: space
+60.2181 	DATA 	Keypress: space
+60.4181 	DATA 	Keypress: space
+60.5945 	DATA 	Keypress: space
+60.8445 	DATA 	Keypress: space
+61.0616 	DATA 	Keypress: space
+61.2450 	DATA 	Keypress: space
+61.4181 	DATA 	Keypress: space
+61.6117 	DATA 	Keypress: space
+61.7949 	DATA 	Keypress: space
+61.9478 	DATA 	Keypress: space
+62.1170 	DATA 	Keypress: space
+62.2843 	DATA 	Keypress: space
+62.5845 	DATA 	Keypress: space
+62.7611 	DATA 	Keypress: space
+62.9783 	DATA 	Keypress: space
+63.1176 	DATA 	Keypress: space
+63.2846 	DATA 	Keypress: space
+63.4534 	DATA 	Keypress: space
+63.6310 	DATA 	Keypress: space
+63.8009 	DATA 	Keypress: space
+63.9618 	DATA 	Keypress: space
+64.1092 	DATA 	Keypress: space
+64.2930 	DATA 	Keypress: space
+71.8867 	DATA 	Keypress: right
+74.0170 	DATA 	Keypress: right
+74.2170 	DATA 	Keypress: right
+74.3923 	DATA 	Keypress: right
+74.5090 	DATA 	Keypress: right
+74.6778 	DATA 	Keypress: right
+74.8054 	DATA 	Keypress: right
+74.9444 	DATA 	Keypress: right
+75.3438 	DATA 	Keypress: right
+75.5611 	DATA 	Keypress: right
+75.9657 	DATA 	Keypress: left
+76.1569 	DATA 	Keypress: left
+76.3392 	DATA 	Keypress: left
+76.5003 	DATA 	Keypress: left
+76.6528 	DATA 	Keypress: left
+76.8171 	DATA 	Keypress: left
+76.9776 	DATA 	Keypress: left
+77.1354 	DATA 	Keypress: left
+77.2959 	DATA 	Keypress: left
+84.0518 	DATA 	Keypress: right
+86.3193 	DATA 	Keypress: right
+86.5336 	DATA 	Keypress: right
+86.7023 	DATA 	Keypress: right
+86.8937 	DATA 	Keypress: right
+87.0363 	DATA 	Keypress: right
+87.1533 	DATA 	Keypress: right
+87.4340 	DATA 	Keypress: right
+87.6025 	DATA 	Keypress: right
+87.7773 	DATA 	Keypress: right
+88.1506 	DATA 	Keypress: left
+88.3204 	DATA 	Keypress: left
+88.4828 	DATA 	Keypress: left
+88.6501 	DATA 	Keypress: left
+88.7999 	DATA 	Keypress: left
+88.9336 	DATA 	Keypress: left
+89.0794 	DATA 	Keypress: left
+89.2335 	DATA 	Keypress: left
+89.4106 	DATA 	Keypress: left
+94.6285 	DATA 	Keypress: escape
+94.6287 	WARNING 	User pressed escape during experiment
+94.6287 	DATA 	Experiment terminated by user: User pressed escape during trial
+94.6287 	WARNING 	No data to save (experiment ended before any trials)
