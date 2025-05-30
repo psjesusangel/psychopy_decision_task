@@ -250,7 +250,7 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     show_ready_screen(win)
     
     # Execute the chosen task
-    # TODO: None for third arg, can show trial number though
+    # TODO: None for third arg, can show trial number though --> Omit trial number
     if choice == 'easy':
         task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, None)
         trial_data['n_clicks_required'] = EASY_CLICKS_REQUIRED

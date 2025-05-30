@@ -1,0 +1,7 @@
+# Ignore all files in logs/ and data/
+logs/*
+data/*
+
+# But keep the directories themselves
+!logs/.gitkeep
+!data/.gitkeep

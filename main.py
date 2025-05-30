@@ -103,9 +103,10 @@ def main():
         if 'escape' in keys:
             raise KeyboardInterrupt("User pressed escape")
         
+        # Skipping instructions during testing for speed...
         # Run instructions (uncomment when ready)
-        # logging.data('[STRUCTURE] Running instructions')
-        # instructions.run_instructions(win, info)
+        logging.data('[STRUCTURE] Running instructions')
+        instructions.run_instructions(win, info)
         
         # Practice trials
         if info['practice_trials']:
