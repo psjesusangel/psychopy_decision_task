@@ -98,10 +98,13 @@ def run_instructions(win, info, calibration_data=None):
     
     # Screen 2: Easy task outcome
     if valence == 'Loss':
-        outcome_text = f"If you select the EASY task, you will have a chance of losing\n{easy_display} even if you complete the task"
-    else:
+        if domain == 'Money':
+            outcome_text = f"If you select the EASY task, you will have a chance of losing\n{unit}{easy_value:.2f} {unit_plural} even if you complete the task"
+        else: # Food
+            outcome_text = f"If you select the EASY task, you will have a chance of losing\n{int(easy_value)} {unit_plural} even if you complete the task"
+    else: # Gain
         outcome_text = f"If you select the EASY task, you will have a chance of winning\n{easy_display} if you complete the task"
-    
+        
     instructions.append({
         'main_text': outcome_text,
         'show_choice_demo': True,
@@ -113,10 +116,13 @@ def run_instructions(win, info, calibration_data=None):
     
     # Screen 3: Hard task outcome
     if valence == 'Loss':
-        outcome_text = f"If you select the HARD task, you will have a chance of losing\n{hard_display} even if you complete the task"
+        if domain == 'Money':
+            outcome_text = f"If you select the HARD task, you will have a chance of losing\n{unit}{hard_value:.2f} {unit_plural} even if you complete the task"
+        else:
+            outcome_text = f"If you select the HARD task, you will have a chance of losing\n{int(hard_value)} {unit_plural} even if you complete the task"
     else:
         outcome_text = f"If you select the HARD task, you will have a chance of winning\n{hard_display} if you complete the task"
-    
+        
     instructions.append({
         'main_text': outcome_text,
         'show_choice_demo': True,

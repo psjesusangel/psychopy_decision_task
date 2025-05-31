@@ -31,7 +31,7 @@ EASY_TASK_DURATION = 7.0   # seconds allowed for easy task
 HARD_TASK_DURATION = 21.0  # seconds allowed for hard task
 
 # Calibration duration for each key press block (in seconds)
-CALIBRATION_DURATION = 2 # TODO: should be 10.5, 2 rn for testing purposes
+CALIBRATION_DURATION = 1 # TODO: should be 10.5
 
 # Practice trials configuration (monetary only)
 PRACTICE_TRIALS = [
