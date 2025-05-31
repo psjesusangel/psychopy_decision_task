@@ -4,7 +4,7 @@ Module for running practice trials in the effort-based decision task.
 """
 import random
 from psychopy import visual, event, core, logging
-from config import EASY_CLICKS_REQUIRED, PRACTICE_TRIALS
+from config import PRACTICE_TRIALS
 
 def run_practice_trials(win, info):
     """
@@ -22,6 +22,7 @@ def run_practice_trials(win, info):
     """
     # Extract relevant information from info dictionary
     handedness = info['handedness']
+    easy_clicks_required = info['easy_clicks_required']
     hard_clicks_required = info['hard_clicks_required']
     dominant_hand = handedness.upper()
     
@@ -39,6 +40,7 @@ def run_practice_trials(win, info):
             trial_config['prob'], 
             trial_config['magnitude_hard'],
             non_dominant_hand,
+            easy_clicks_required,
             hard_clicks_required
         )
         practice_data.append(trial_data)
@@ -46,7 +48,7 @@ def run_practice_trials(win, info):
     # Return data from practice trials
     return practice_data
 
-def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant_hand, hard_clicks_required):
+def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant_hand, easy_clicks_required, hard_clicks_required):
     """
     Run a single practice trial with given parameters.
     
@@ -95,8 +97,8 @@ def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant
     
     # Execute the chosen task
     if choice == 'easy':
-        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, trial_num)
-        trial_data['n_clicks_required'] = EASY_CLICKS_REQUIRED
+        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num)
+        trial_data['n_clicks_required'] = easy_clicks_required
     else:
         task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num)
         trial_data['n_clicks_required'] = hard_clicks_required
@@ -320,9 +322,9 @@ def show_completion_status(win, task_complete):
     )
     completion_text.draw()
     win.flip()
-    core.wait(2.0)
+    core.wait(2.0) # TODO: 2 seconds feel a little long
 
-def run_easy_task(win, non_dominant_hand, trial_num):
+def run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num):
     """
     Run the easy task (press space bar 30 times in 7 seconds).
     
@@ -331,6 +333,8 @@ def run_easy_task(win, non_dominant_hand, trial_num):
         Window to display stimuli
     non_dominant_hand : str
         The participant's non-dominant hand
+    easy_clicks_required : int
+        Number of clicks required for the hard task
     trial_num : int
         Trial number
         
@@ -377,7 +381,7 @@ def run_easy_task(win, non_dominant_hand, trial_num):
     end_time = start_time + task_duration
     
     # Task loop
-    while core.getTime() < end_time and clicks_executed < EASY_CLICKS_REQUIRED:
+    while core.getTime() < end_time and clicks_executed < easy_clicks_required:
         # Check for keypresses
         keys = event.getKeys(keyList=['space', 'escape'])
         
@@ -391,7 +395,7 @@ def run_easy_task(win, non_dominant_hand, trial_num):
             clicks_executed += 1
             
         # Calculate progress
-        progress = min(1.0, clicks_executed / EASY_CLICKS_REQUIRED)
+        progress = min(1.0, clicks_executed / easy_clicks_required)
         new_height = 0.6 * progress
         
         # Update progress bar
@@ -436,7 +440,7 @@ def run_easy_task(win, non_dominant_hand, trial_num):
         core.wait(0.001)
     
     # Check if task was completed
-    task_complete = clicks_executed >= EASY_CLICKS_REQUIRED
+    task_complete = clicks_executed >= easy_clicks_required
     
     return task_complete, clicks_executed
 

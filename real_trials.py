@@ -7,9 +7,8 @@ from datetime import datetime
 from psychopy import visual, event, core, logging
 from config import (
     MONEY_MAGNITUDES, FOOD_MAGNITUDES, PROBABILITIES, ITI_RANGE,
-    EASY_CLICKS_REQUIRED, CATCH_TRIAL_CONFIGS, N_REAL_TRIALS, N_CATCH_TRIALS,
-    LOSS_EASY_VALUE, LOSS_HARD_VALUE, GAIN_EASY_VALUE, GAIN_HARD_VALUE,
-    ENDOWMENT_MONEY, ENDOWMENT_FOOD, INCOMPLETE_TASK_PENALTY
+    N_REAL_TRIALS, N_CATCH_TRIALS, CATCH_TRIAL_CONFIGS,
+    LOSS_EASY_VALUE, LOSS_HARD_VALUE, GAIN_EASY_VALUE, GAIN_HARD_VALUE
 )
 from practice_trials import (
     show_fixation, show_ready_screen, show_completion_status,
@@ -34,6 +33,7 @@ def run_real_trials(win, info):
     domain = info['domain']
     valence = info['valence'] 
     handedness = info['handedness']
+    easy_clicks_required = info['easy_clicks_required']
     hard_clicks_required = info['hard_clicks_required']
     subject_number = info['subject_number']
     
@@ -66,6 +66,7 @@ def run_real_trials(win, info):
             domain,
             valence,
             non_dominant_hand,
+            easy_clicks_required, 
             hard_clicks_required,
             subject_number,
             handedness
@@ -171,7 +172,7 @@ def show_trial_fixation(win, trial_num):
     # Note: ITI is handled in main loop, this is just the fixation display
 
 def run_single_trial(win, trial_num, trial_params, domain, valence, 
-                    non_dominant_hand, hard_clicks_required, subject_number, handedness):
+                    non_dominant_hand, easy_clicks_required, hard_clicks_required, subject_number, handedness):
     """
     Run a single experimental trial.
     
@@ -188,6 +189,8 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
         'Gain' or 'Loss'
     non_dominant_hand : str
         Participant's non-dominant hand
+    easy_clicks_required: int
+        Number of clicks required for easy task
     hard_clicks_required : int
         Number of clicks required for hard task
     subject_number : int
@@ -252,8 +255,8 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     # Execute the chosen task
     # TODO: None for third arg, can show trial number though --> Omit trial number
     if choice == 'easy':
-        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, None)
-        trial_data['n_clicks_required'] = EASY_CLICKS_REQUIRED
+        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, easy_clicks_required, None)
+        trial_data['n_clicks_required'] = easy_clicks_required
     else:
         task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required, None)
         trial_data['n_clicks_required'] = hard_clicks_required

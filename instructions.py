@@ -4,12 +4,11 @@ Module for displaying task instructions to participants.
 """
 from psychopy import visual, event, core, logging
 from config import (
-    EASY_CLICKS_REQUIRED, EASY_TASK_DURATION, HARD_TASK_DURATION,
     ENDOWMENT_MONEY, ENDOWMENT_FOOD, INCOMPLETE_TASK_PENALTY,
     LOSS_EASY_VALUE, LOSS_HARD_VALUE, GAIN_EASY_VALUE, GAIN_HARD_VALUE,
-    EXAMPLE_LOW_PROB, EXAMPLE_HIGH_PROB, CALIBRATION_DURATION
+    EASY_TASK_DURATION, HARD_TASK_DURATION,
+    EXAMPLE_LOW_PROB, EXAMPLE_HIGH_PROB
 )
-
 def run_instructions(win, info, calibration_data=None):
     """
     Display comprehensive task instructions to participants.
@@ -30,15 +29,11 @@ def run_instructions(win, info, calibration_data=None):
     valence = info['valence']
     handedness = info['handedness']
     
-    #    # Calculate hard task requirements if calibration data available
-    #    if calibration_data:
-    #        hard_clicks_required = int(0.8 * (calibration_data.get('calibration_presses_left', 50) + 
-    #                                         calibration_data.get('calibration_presses_right', 50)))
-    #    else:
-    #        hard_clicks_required = 80  # Default value if no calibration data
-
     if 'hard_clicks_required' in info:
         hard_clicks_required = info['hard_clicks_required']
+        
+    if 'easy_clicks_required' in info:
+        easy_clicks_required = info['easy_clicks_required']
     
     # Determine text variations based on domain and valence
     if domain == 'Money':
@@ -134,7 +129,7 @@ def run_instructions(win, info, calibration_data=None):
     
     # Screen 4: Easy task details
     instructions.append({
-        'main_text': (f"The EASY task requires you to press the SPACE BAR {EASY_CLICKS_REQUIRED}\n"
+        'main_text': (f"The EASY task requires you to press the SPACE BAR {easy_clicks_required}\n"
                      f"times in {int(EASY_TASK_DURATION)} seconds using the index finger of your {dominant_hand} hand"),
         'show_progress_demo': True,
         'progress_text': "A shaded bar will indicate your progress as you complete\nthe task:",

@@ -82,6 +82,12 @@ def main():
         info['hard_clicks_required'] = hard_clicks_required
         logging.data(f'[DATA] Hard clicks required: {hard_clicks_required}')
         
+        # 5/28 Meeting: Compute easy click requirement (0.20 * max clicks from hard calibration)
+        max_calibration_clicks = max(left_count, right_count)
+        easy_clicks_required = int(0.2 * max_calibration_clicks)
+        info['easy_clicks_required'] = easy_clicks_required
+        logging.data(f'[DATA] Easy clicks required: {easy_clicks_required}')
+        
         # Display summary of calibration
         summary = visual.TextStim(
             win,
@@ -89,6 +95,7 @@ def main():
                 f"Calibration Complete!\n\n"
                 f"Right key presses: {right_count}\n"
                 f"Left key presses: {left_count}\n"
+                f"Easy task will require {easy_clicks_required} presses.\n"
                 f"Hard task will require {hard_clicks_required} presses.\n\n"
                 "Press SPACE to continue."
             ),

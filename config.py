@@ -26,12 +26,12 @@ PROBABILITIES = [0.12, 0.50, 0.88]
 ITI_RANGE = (1.0, 2.0)
 
 # Click requirements
-EASY_CLICKS_REQUIRED = 30  # for easy task
+# EASY_CLICKS_REQUIRED = 30  # for easy task --> will be subject to calibration now
 EASY_TASK_DURATION = 7.0   # seconds allowed for easy task
 HARD_TASK_DURATION = 21.0  # seconds allowed for hard task
 
 # Calibration duration for each key press block (in seconds)
-CALIBRATION_DURATION = 1 # TODO: should be 10.5
+CALIBRATION_DURATION = 3 # TODO: should be 10.5
 
 # Practice trials configuration (monetary only)
 PRACTICE_TRIALS = [
