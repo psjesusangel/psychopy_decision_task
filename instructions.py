@@ -292,8 +292,8 @@ def display_instruction_screen(win, instruction):
         # Gray background box
         choice_bg = visual.Rect(
             win,
-            width=1.25, # was 1.4
-            height=0.4, # was 0.5
+            width=1.25, 
+            height=0.4,
             fillColor=[0.2, 0.2, 0.2],
             pos=(0, -0.1)
         )
@@ -406,41 +406,44 @@ def display_instruction_screen(win, instruction):
             progress_label = visual.TextStim(
                 win,
                 text=instruction['progress_text'],
-                pos=(0, -0.05),
-                height=0.035,
+                pos=(0, 0.05), # was 0.1
+                height=0.035,  
                 color='white'
             )
             elements.append(progress_label)
         
-        # Progress bar background
+        # Progress bar background -> smaller vertical bar like in practice trials
         progress_bg = visual.Rect(
             win,
-            width=0.8,
-            height=0.08,
-            fillColor='white',
-            lineColor='black',
-            lineWidth=2,
-            pos=(0, -0.2)
+            width=0.1,
+            height=0.35,  
+            fillColor='darkgrey',  
+            lineColor='white',
+            pos=(0, -0.2)  
         )
         elements.append(progress_bg)
         
         # Progress bar fill, (37%) just as an example
+        progress = 0.37
+        bar_height = 0.35 
+        new_height = bar_height * progress
         progress_fill = visual.Rect(
             win,
-            width=0.8 * 0.37,
-            height=0.08,
-            fillColor='green',
-            pos=(-(0.8 - 0.8 * 0.37) / 2, -0.2)
+            width=0.1,
+            height=new_height,
+            fillColor='blue',  # Match practice trials
+            lineColor=None,
+            pos=(0, -0.2 - (bar_height - new_height) / 2)  
         )
         elements.append(progress_fill)
         
-        # Percentage text
+        # Percentage text - positioned like in practice trials
         percent_text = visual.TextStim(
             win,
             text="37%",
-            pos=(0, -0.2),
+            pos=(0.15, -0.2),  # Aligned with center of progress bar
             height=0.035,
-            color='black',
+            color='white',
             bold=True
         )
         elements.append(percent_text)
