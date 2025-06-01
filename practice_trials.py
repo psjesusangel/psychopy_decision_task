@@ -114,16 +114,16 @@ def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant
 def show_fixation(win, trial_num):
     """Show fixation cross with practice trial text."""
     fixation = visual.TextStim(win, text="+", height=0.08, color='white')
-    trial_text = visual.TextStim(
-        win, 
-        text=f"Practice trial\n{trial_num}", 
-        pos=(0, -0.15), 
-        height=0.05, 
-        color='white'
-    )
+#    trial_text = visual.TextStim(
+#        win, 
+#        text=f"Practice trial\n{trial_num}", 
+#        pos=(0, -0.15), 
+#        height=0.05, 
+#        color='white'
+#    )
     
     fixation.draw()
-    trial_text.draw()
+    # trial_text.draw()
     win.flip()
     core.wait(1.0)
 
@@ -138,23 +138,24 @@ def show_choice_screen(win, trial_num, probability, magnitude_hard):
     # Create visual elements
     elements = []
     
-    # Trial header
-    choice_text = visual.TextStim(
-        win,
-        text=f"Practice trial\n{trial_num}",
-        pos=(0, 0.35),
-        height=0.05,
-        color='white'
-    )
-    elements.append(choice_text)
+    # 5/28 Meeting: Remove headers
+#    # Trial header
+#    choice_text = visual.TextStim(
+#        win,
+#        text=f"Practice trial\n{trial_num}",
+#        pos=(0, 0.35),
+#        height=0.05,
+#        color='white'
+#    )
+#    elements.append(choice_text)
     
     # Gray background box for choices
     choice_bg = visual.Rect(
         win,
-        width=1.4,
-        height=0.5,
-        fillColor=[0.2, 0.2, 0.2],
-        pos=(0, -0.1)
+        width=2.0, # was 1.4 but now fullscreen
+        height=2.0, # was 0.5 but now fullscreen
+        fillColor=[0.2, 0.2, 0.2], # dark gray
+        pos=(0, 0)
     )
     elements.append(choice_bg)
     
@@ -357,13 +358,13 @@ def run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num):
         pos=(0, 0)
     )
     
-    instruction_text = visual.TextStim(
-        win,
-        text=f"Practice trial {trial_num}\n(easy task)",
-        pos=(0, 0.4),
-        height=0.05,
-        color='white'
-    )
+#    instruction_text = visual.TextStim(
+#        win,
+#        text=f"Practice trial {trial_num}\n(easy task)",
+#        pos=(0, 0.4),
+#        height=0.05,
+#        color='white'
+#    )
     
     task_text = visual.TextStim(
         win,
@@ -428,7 +429,7 @@ def run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num):
         )
         
         # Draw elements
-        instruction_text.draw()
+        # instruction_text.draw()
         progress_bar_back.draw()
         progress_bar_fill.draw()
         progress_text.draw()
@@ -518,13 +519,13 @@ def execute_hard_task_phase(win, key_name, key_display, current_clicks, required
         pos=(0, 0)
     )
     
-    instruction_text = visual.TextStim(
-        win,
-        text=f"Practice trial {trial_num}\n(hard task)",
-        pos=(0, 0.4),
-        height=0.05,
-        color='white'
-    )
+#    instruction_text = visual.TextStim(
+#        win,
+#        text=f"Practice trial {trial_num}\n(hard task)",
+#        pos=(0, 0.4),
+#        height=0.05,
+#        color='white'
+#    )
     
     task_text = visual.TextStim(
         win,
@@ -581,7 +582,7 @@ def execute_hard_task_phase(win, key_name, key_display, current_clicks, required
         )
         
         # Draw elements
-        instruction_text.draw()
+        # instruction_text.draw()
         progress_bar_back.draw()
         progress_bar_fill.draw()
         progress_text.draw()

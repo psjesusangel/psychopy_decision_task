@@ -244,7 +244,7 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     
     # Show choice screen and get response
     choice, choice_rt = show_experiment_choice_screen(
-        win, trial_num, probability, magnitude_hard, easy_value, domain, valence
+        win, probability, magnitude_hard, easy_value, domain, valence
     )
     trial_data['choice'] = choice
     trial_data['choice_rt'] = choice_rt
@@ -253,7 +253,6 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     show_ready_screen(win)
     
     # Execute the chosen task
-    # TODO: None for third arg, can show trial number though --> Omit trial number
     if choice == 'easy':
         task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, easy_clicks_required, None)
         trial_data['n_clicks_required'] = easy_clicks_required
@@ -269,11 +268,11 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     
     # Log catch trial responses
     if is_catch and choice == 'hard':
-        logging.warning(f"Participant chose hard option on catch trial {trial_num}")
+        logging.data(f"[CATCH TRIAL] Participant chose hard option on catch trial {trial_num}")
     
     return trial_data
 
-def show_experiment_choice_screen(win, trial_num, probability, magnitude_hard, easy_value, domain, valence):
+def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, domain, valence):
     """
     Display choice screen for experimental trials with proper formatting for domain/valence.
     
@@ -303,23 +302,24 @@ def show_experiment_choice_screen(win, trial_num, probability, magnitude_hard, e
     # Create visual elements
     elements = []
     
-    # "Experiment" header
-    header_text = visual.TextStim(
-        win,
-        text="Experiment",
-        pos=(0, 0.35),
-        height=0.05,
-        color='white'
-    )
-    elements.append(header_text)
+    # 5/28 Meeting: Remove headers
+#    # "Experiment" header
+#    header_text = visual.TextStim(
+#        win,
+#        text="Experiment",
+#        pos=(0, 0.35),
+#        height=0.05,
+#        color='white'
+#    )
+#    elements.append(header_text)
     
-    # Gray background box for choices
+    # Gray background box for FULL background
     choice_bg = visual.Rect(
         win,
-        width=1.4,
-        height=0.5,
+        width=2.0,
+        height=2.0,
         fillColor=[0.2, 0.2, 0.2],
-        pos=(0, -0.1)
+        pos=(0, 0)
     )
     elements.append(choice_bg)
     
