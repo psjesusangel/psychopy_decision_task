@@ -10,7 +10,8 @@ def get_subject_info():
     """
     Collect and validate subject information through a GUI dialog.
     
-    Collects subject number, domain, valence, handedness, and whether to run practice trials.
+    Collects subject number, domain, valence, handedness, snack choice (if food domain), 
+    and whether to run practice trials.
     Validates input (especially numeric subject ID) and creates a unique filename for data storage.
     
     Returns:
@@ -20,8 +21,10 @@ def get_subject_info():
         - domain (str): 'Money' or 'Food'
         - valence (str): 'Gain' or 'Loss'
         - handedness (str): 'Right' or 'Left'
+        - snack_choice (str): chosen snack if Food domain, None if Money domain
         - practice_trials (bool): True if practice block is desired
         - filename (str): Unique filename for data storage
+        - base_filename (str): Base filename for partial data naming
     """
     # Loop until all entries are valid (or user cancels)
     while True:
@@ -70,7 +73,36 @@ def get_subject_info():
             alert.show()
             continue  # Re-display the main dialog
             
-        break  # All good
+        # If validation passes, check for Food domain snack selection
+        if domain == 'Food':
+            snack_choice = None
+            while True:  # Loop until snack is selected or user goes back
+                snack_info = {
+                    'Snack Choice': ['M&Ms', 'Cheez-Its', 'Nut Mix', 'Mini Pretzels', 'Mini Ritz', 'Gummi Bears']
+                }
+                
+                snack_dlg = gui.DlgFromDict(
+                    dictionary=snack_info,
+                    title='Select Your Snack',
+                    sortKeys=False
+                )
+                
+                if not snack_dlg.OK:
+                    logging.data('User cancelled snack selection - returning to main dialog')
+                    snack_choice = None
+                    break  # Break out of snack selection
+                else:
+                    snack_choice = snack_info['Snack Choice']
+                    logging.data(f"[INFO] Snack selected: {snack_choice}")
+                    break  # Break out of snack selection loop
+            
+            # If no snack was selected (user cancelled), go back to main dialog
+            if snack_choice is None:
+                continue  # Go back to beginning of main while loop
+        else:
+            snack_choice = None  # Money domain doesn't need snack selection
+        
+        break  # All validation and selection complete
     
     # Convert and finalize
     sub_num = int(snum)
@@ -97,12 +129,16 @@ def get_subject_info():
 
     logging.data(f"[INFO] Subject info collected: ID={sub_num}, domain={domain}, valence={valence}")
 
+    if snack_choice:
+        logging.data(f"[INFO] Snack choice: {snack_choice}")
+    
     return {
         'subject_number': sub_num,
         'domain': domain,
         'valence': valence,
         'handedness': hand,
+        'snack_choice': snack_choice,  # Will be None for Money domain
         'practice_trials': (practice == 'Yes'),
         'filename': filename,
-        'base_filename': base_filename  # ADD THIS LINE
+        'base_filename': base_filename
     }
