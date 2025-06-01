@@ -91,13 +91,18 @@ def get_subject_info():
         filename = f"{sub_num}_{domain_abbr}_{valence_abbr}_{counter}.csv"
         counter += 1
     
+    # Store the base name for partial file naming (without .csv extension)
+    base_name_no_ext = f"{sub_num}_{domain_abbr}_{valence_abbr}"
+    base_filename = f"{base_name_no_ext}_{counter}" if counter > 1 else base_name_no_ext
+
     logging.data(f"[INFO] Subject info collected: ID={sub_num}, domain={domain}, valence={valence}")
-    
+
     return {
         'subject_number': sub_num,
         'domain': domain,
         'valence': valence,
         'handedness': hand,
         'practice_trials': (practice == 'Yes'),
-        'filename': filename
+        'filename': filename,
+        'base_filename': base_filename  # ADD THIS LINE
     }

@@ -37,7 +37,7 @@ def run_calibration(win, hand='right', handedness='right'):
     # Add exit instruction text
     exit_instructions = visual.TextStim(
         win, 
-        text="To exit: Press Cmd+Q (macOS) or Alt+F4 (Windows) or ESC key",
+        text="To exit: Press the ESC key",
         pos=(0, -0.45),      # Position at bottom of screen
         height=0.025,        # Smaller text
         color='grey'         # Less prominent color

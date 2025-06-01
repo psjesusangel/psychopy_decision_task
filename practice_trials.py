@@ -43,10 +43,8 @@ def run_practice_trials(win, info):
             easy_clicks_required,
             hard_clicks_required
         )
-        practice_data.append(trial_data)
-    
-    # Return data from practice trials
-    return practice_data
+        
+    # Don't track practice trials anymore (for now)
 
 def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant_hand, easy_clicks_required, hard_clicks_required):
     """

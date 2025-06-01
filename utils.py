@@ -58,82 +58,31 @@ def setup_logging(info=None, log_dir='logs'):
     
     return log_filename
 
-def save_data(filepath, data_list):
-    """
-    Save experimental data to CSV file.
-    
-    Parameters:
-    filepath : str
-        Full path to save the CSV file
-    data_list : list
-        List of dictionaries containing trial data
-    """    
-    if not data_list:
-        logging.warning("No data to save")
-        return
-    
-    # Get all unique keys from all trials
-    all_keys = set()
-    for trial in data_list:
-        all_keys.update(trial.keys())
-    
-    # Define column order
-    column_order = [
+def create_data_file(filepath):
+    """Create empty CSV file with headers."""
+    headers = [
         'date', 'time', 'subject', 'handedness', 'trial_num', 
         'domain', 'valence', 'magnitude_hard', 'probability', 'EV',
         'choice', 'choice_rt', 'n_clicks_required', 'n_clicks_executed', 
         'task_complete', 'is_catch', 'trial_type'
     ]
     
-    # Add any remaining keys not in column_order
-    remaining_keys = all_keys - set(column_order)
-    column_order.extend(sorted(remaining_keys))
-    
-    # Filter to only include keys that exist in the data
-    actual_columns = [col for col in column_order if col in all_keys]
-    
-    # Write to CSV
     with open(filepath, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=actual_columns, extrasaction='ignore')
+        writer = csv.DictWriter(csvfile, fieldnames=headers)
         writer.writeheader()
-        writer.writerows(data_list)
     
-    logging.data(f"[STRUCTURE] Data saved to {filepath} with {len(data_list)} trials")
+    logging.data(f"[STRUCTURE] Data file created: {filepath}")
 
-def save_partial_data(info, all_data, reason="User quit"):
-    """
-    Save partial data when experiment is terminated early.
-    
-    Parameters:
-    info : dict
-        Subject information
-    all_data : list
-        List of trial data collected so far
-    reason : str
-        Reason for early termination
-    """
-    if not all_data:
-        logging.warning("No data to save (experiment ended before any trials)")
-        return
-    
-    # Create data directory if it doesn't exist
-    data_dir = os.path.join(os.getcwd(), 'data')
-    if not os.path.exists(data_dir):
-        os.makedirs(data_dir)
-    
-    # Modify filename to indicate partial data
-    original_filename = info['filename']
-    base, ext = os.path.splitext(original_filename)
-    partial_filename = f"{base}_PARTIAL{ext}"
-    output_path = os.path.join(data_dir, partial_filename)
-    
-    # Add termination info to last trial
-    if all_data:
-        all_data[-1]['termination_reason'] = reason
-        all_data[-1]['partial_data'] = True
-    
-    # Save the data
-    save_data(output_path, all_data)
-    logging.data(f"[STRUCTURE] Partial data saved to {output_path} - Reason: {reason}")
-    
-    return output_path
+def append_trial_data(filepath, trial_data):
+    """Append single trial data to existing CSV file."""
+    with open(filepath, 'a', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=trial_data.keys())
+        writer.writerow(trial_data)
+
+def count_trials_in_file(filepath):
+    """Count number of data rows in CSV file."""
+    try:
+        with open(filepath, 'r') as csvfile:
+            return sum(1 for line in csvfile) - 1  # Subtract header row
+    except FileNotFoundError:
+        return 0

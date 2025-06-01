@@ -14,6 +14,7 @@ from practice_trials import (
     show_fixation, show_ready_screen, show_completion_status,
     run_easy_task, run_hard_task
 )
+from utils import append_trial_data
 
 def run_real_trials(win, info):
     """
@@ -54,31 +55,40 @@ def run_real_trials(win, info):
     show_experiment_start(win)
     
     # Run all trials
-    for trial_num, trial_params in enumerate(trial_list, 1):
-        # Show fixation with ITI
-        show_trial_fixation(win, trial_num)
+    try: 
+        for trial_num, trial_params in enumerate(trial_list, 1):
+            # Show fixation with ITI
+            show_trial_fixation(win, trial_num)
+            
+            # Run the trial
+            trial_data = run_single_trial(
+                win, 
+                trial_num,
+                trial_params,
+                domain,
+                valence,
+                non_dominant_hand,
+                easy_clicks_required, 
+                hard_clicks_required,
+                subject_number,
+                handedness
+            )
+            
+            # Save trial data immediately
+            append_trial_data(info['data_file_path'], trial_data)
+            
+            # Add trial data to list
+            trial_data_list.append(trial_data)
+            
+            # Inter-trial interval
+            iti = random.uniform(*ITI_RANGE)
+            core.wait(iti)
+            
+    except KeyboardInterrupt:
+        # User pressed escape during trials -> let main.py handle the partial file renaming
+        logging.data(f"[STRUCTURE] User interrupted during trial {trial_num}")
+        raise  # Re-raise to let main.py handle it
         
-        # Run the trial
-        trial_data = run_single_trial(
-            win, 
-            trial_num,
-            trial_params,
-            domain,
-            valence,
-            non_dominant_hand,
-            easy_clicks_required, 
-            hard_clicks_required,
-            subject_number,
-            handedness
-        )
-        
-        # Add trial data to list
-        trial_data_list.append(trial_data)
-        
-        # Inter-trial interval
-        iti = random.uniform(*ITI_RANGE)
-        core.wait(iti)
-    
     return trial_data_list
 
 def generate_trial_list(domain, valence):

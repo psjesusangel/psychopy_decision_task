@@ -5,8 +5,8 @@ Entry point for the effort-based decision task experiment.
 import os
 import sys
 from psychopy import visual, core, event, logging
-import config
-from utils import setup_logging, save_data, save_partial_data
+from config import N_REAL_TRIALS, N_CATCH_TRIALS
+from utils import setup_logging, create_data_file, count_trials_in_file
 from subject_info import get_subject_info
 import calibration
 import instructions
@@ -24,16 +24,11 @@ def main():
     - Run calibration
     - Run practice trials (if selected)
     - Run main experimental trials
-    - Save data and clean up
+    - Check completion and rename if partial
     
     Returns:
     None
     """
-    # Initialize variables for cleanup
-    win = None
-    info = None
-    all_data = []
-    
     try:
         # Collect subject info FIRST
         info = get_subject_info()
@@ -42,6 +37,17 @@ def main():
         setup_logging(info)
         logging.data('Starting experiment')
         logging.exp(f"Subject info: {info}")
+        
+        # Create data file immediately
+        data_dir = os.path.join(os.getcwd(), 'data')
+        if not os.path.exists(data_dir):
+            os.makedirs(data_dir)
+
+        data_file_path = os.path.join(data_dir, info['filename'])
+        info['data_file_path'] = data_file_path
+
+        # Create empty CSV with headers
+        create_data_file(data_file_path)
         
         # Initialize window 
         win = visual.Window(
@@ -54,7 +60,7 @@ def main():
         # Add text indicating exit options
         exit_instructions = visual.TextStim(
             win, 
-            text="To exit: Press Cmd+Q (macOS) or Alt+F4 (Windows) or ESC key",
+            text="To exit: Press the ESC key",
             pos=(0, -0.45),      # Position at bottom of screen
             height=0.025,        # Smaller text
             color='grey'         # Less prominent color
@@ -65,9 +71,6 @@ def main():
         
         # Calibration phase
         logging.data('[STRUCTURE] Running right-hand calibration')
-        
-        # Show exit instructions on each screen
-        exit_instructions.draw()
         
         # Run the calibration with non-dominant hand (based on handedness)
         right_count = calibration.run_calibration(win, hand='right', handedness=handedness)
@@ -82,7 +85,7 @@ def main():
         info['hard_clicks_required'] = hard_clicks_required
         logging.data(f'[DATA] Hard clicks required: {hard_clicks_required}')
         
-        # 5/28 Meeting: Compute easy click requirement (0.20 * max clicks from hard calibration)
+        # Compute easy click requirement (0.20 * max clicks from hard calibration)
         max_calibration_clicks = max(left_count, right_count)
         easy_clicks_required = int(0.2 * max_calibration_clicks)
         info['easy_clicks_required'] = easy_clicks_required
@@ -108,23 +111,19 @@ def main():
         # Wait for space after calibration summary
         keys = event.waitKeys(keyList=['space', 'escape'])
         if 'escape' in keys:
-            raise KeyboardInterrupt("User pressed escape")
+            logging.data("User pressed escape during calibration summary")
+            win.close()
+            core.quit()
+            return
         
-        # Skipping instructions during testing for speed...
-        # Run instructions (uncomment when ready)
+        # Run instructions
         logging.data('[STRUCTURE] Running instructions')
         instructions.run_instructions(win, info)
         
         # Practice trials
         if info['practice_trials']:
             logging.data('[STRUCTURE] Running practice trials')
-            try:
-                practice_data = practice_trials.run_practice_trials(win, info)
-                all_data.extend(practice_data)
-            except Exception as e:
-                logging.error(f"Error during practice trials: {e}")
-                save_partial_data(info, all_data, "Error during practice trials")
-                raise
+            practice_trials.run_practice_trials(win, info)
             
             # After practice trials, show option to continue or repeat
             practice_end_text = visual.TextStim(
@@ -145,43 +144,44 @@ def main():
                 keys = event.waitKeys(keyList=['space', 'return', 'escape'])
                 
                 if 'escape' in keys:
-                    raise KeyboardInterrupt("User pressed escape after practice")
+                    logging.data("User pressed escape after practice")
+                    win.close()
+                    core.quit()
+                    return
                 elif 'space' in keys:
                     # Continue to main experiment
                     break
                 elif 'return' in keys:
                     # Repeat practice trials
                     logging.data('[STRUCTURE] Repeating practice trials')
-                    try:
-                        practice_data = practice_trials.run_practice_trials(win, info)
-                        # Don't extend all_data here since we're just repeating
-                    except Exception as e:
-                        logging.error(f"Error during practice trial repeat: {e}")
-                        save_partial_data(info, all_data, "Error during practice trial repeat")
-                        raise
+                    practice_trials.run_practice_trials(win, info)
         else:
             logging.data('[STRUCTURE] Skipping practice trials')
         
         # Main experiment
         logging.data('[STRUCTURE] Running main experimental trials')
         try:
-            real_data = run_real_trials(win, info)
-            all_data.extend(real_data)
-        except Exception as e:
-            logging.error(f"Error during main experiment: {e}")
-            save_partial_data(info, all_data, "Error during main experiment")
+            run_real_trials(win, info)
+            # If we reach here, experiment completed successfully
+            expected_trials = N_REAL_TRIALS + N_CATCH_TRIALS
+            actual_trials = count_trials_in_file(data_file_path)
+            logging.data(f'[STRUCTURE] Experiment completed successfully - {actual_trials} trials saved')
+        except KeyboardInterrupt:
+            # Handle early termination from real trials
+            logging.data("Experiment terminated during main trials")
+            expected_trials = N_REAL_TRIALS + N_CATCH_TRIALS
+            actual_trials = count_trials_in_file(data_file_path)
+            
+            logging.data(f"[STRUCTURE] Expected: {expected_trials}, Actual: {actual_trials}")
+    
+            if actual_trials < expected_trials:
+                # Rename file to indicate partial completion
+                partial_path = os.path.join(data_dir, f"{info['base_filename']}_PARTIAL.csv")
+                os.rename(data_file_path, partial_path)
+                logging.data(f"[STRUCTURE] Incomplete experiment - renamed to {partial_path}")
+            
+            # Re-raise to exit cleanly
             raise
-        
-        # If we get here, experiment completed normally
-        # Create data directory if it doesn't exist
-        data_dir = os.path.join(os.getcwd(), 'data')
-        if not os.path.exists(data_dir):
-            os.makedirs(data_dir)
-        
-        # Save complete data to /data folder
-        output_path = os.path.join(data_dir, info['filename'])
-        save_data(output_path, all_data)
-        logging.data(f'[STRUCTURE] Data saved to {output_path}')
         
         # Show completion message
         completion = visual.TextStim(
@@ -196,24 +196,24 @@ def main():
         # Wait for space key
         event.waitKeys(keyList=['space'])
         
-    except KeyboardInterrupt as e:
-        # User pressed escape or Ctrl+C
-        logging.data(f"Experiment terminated by user: {e}")
-        if info:
-            save_partial_data(info, all_data, "User terminated (ESC/Ctrl+C)")
+        # Cleanup 
+        win.close()
+        core.quit()
+        
+    except KeyboardInterrupt:
+        # User pressed Ctrl+C
+        logging.data("Experiment terminated by user (Ctrl+C)")
+        if 'win' in locals():
+            win.close()
+        core.quit()
         
     except Exception as e:
         # Any other error
         logging.error(f"Unexpected error: {e}")
-        if info:
-            save_partial_data(info, all_data, f"Unexpected error: {str(e)}")
-        raise
-        
-    finally:
-        # Cleanup 
-        if win:
+        if 'win' in locals():
             win.close()
         core.quit()
+        raise
 
 # Allow keyboard interrupt to exit program
 if __name__ == '__main__':
