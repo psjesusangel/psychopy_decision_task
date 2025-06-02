@@ -9,6 +9,7 @@ from config import (
     EASY_TASK_DURATION, HARD_TASK_DURATION,
     EXAMPLE_LOW_PROB, EXAMPLE_HIGH_PROB
 )
+
 def run_instructions(win, info, calibration_data=None):
     """
     Display comprehensive task instructions to participants.
@@ -17,7 +18,7 @@ def run_instructions(win, info, calibration_data=None):
     win : psychopy.visual.Window
         Window to display stimuli
     info : dict
-        Subject information including domain, valence, and handedness
+        Subject information including domain, valence, handedness, and snack_choice
     calibration_data : dict, optional
         Contains calibration_presses_left and calibration_presses_right
         
@@ -44,10 +45,11 @@ def run_instructions(win, info, calibration_data=None):
         incomplete_penalty = f'${INCOMPLETE_TASK_PENALTY:.2f}'
     else:  # Food
         unit = ''
-        unit_plural = 'snacks'
+        snack_name = info.get('snack_choice', 'snacks')  # Get chosen snack or default to 'snacks'
+        unit_plural = snack_name.lower()  # Use the chosen snack name
         endowment = ENDOWMENT_FOOD
-        endowment_text = f'{endowment} snacks'
-        incomplete_penalty = f'{int(INCOMPLETE_TASK_PENALTY)} snacks'
+        endowment_text = f'{endowment} {unit_plural}'
+        incomplete_penalty = f'{int(INCOMPLETE_TASK_PENALTY)} {unit_plural}'
     
     # Set values based on valence
     if valence == 'Loss':
@@ -63,7 +65,7 @@ def run_instructions(win, info, calibration_data=None):
         outcome_word = 'gain'
         prob_label = 'Probability of gain:'
     
-    # Format values for display
+    # Format values for display based on domain and valence
     if domain == 'Money':
         easy_display = f"{'-' if valence == 'Loss' else '+'}{unit}{easy_value:.2f}"
         hard_display = f"{'-' if valence == 'Loss' else '+'}{unit}{hard_value:.2f}"
@@ -98,7 +100,10 @@ def run_instructions(win, info, calibration_data=None):
         else: # Food
             outcome_text = f"If you select the EASY task, you will have a chance of losing\n{int(easy_value)} {unit_plural} even if you complete the task"
     else: # Gain
-        outcome_text = f"If you select the EASY task, you will have a chance of winning\n{easy_display} if you complete the task"
+        if domain == 'Money':
+            outcome_text = f"If you select the EASY task, you will have a chance of winning\n{easy_display} if you complete the task"
+        else: # Food
+            outcome_text = f"If you select the EASY task, you will have a chance of winning\n{easy_display} if you complete the task"
         
     instructions.append({
         'main_text': outcome_text,
@@ -113,10 +118,13 @@ def run_instructions(win, info, calibration_data=None):
     if valence == 'Loss':
         if domain == 'Money':
             outcome_text = f"If you select the HARD task, you will have a chance of losing\n{unit}{hard_value:.2f} {unit_plural} even if you complete the task"
-        else:
+        else: # Food
             outcome_text = f"If you select the HARD task, you will have a chance of losing\n{int(hard_value)} {unit_plural} even if you complete the task"
-    else:
-        outcome_text = f"If you select the HARD task, you will have a chance of winning\n{hard_display} if you complete the task"
+    else: # Gain
+        if domain == 'Money':
+            outcome_text = f"If you select the HARD task, you will have a chance of winning\n{hard_display} if you complete the task"
+        else: # Food
+            outcome_text = f"If you select the HARD task, you will have a chance of winning\n{hard_display} if you complete the task"
         
     instructions.append({
         'main_text': outcome_text,
@@ -191,7 +199,7 @@ def run_instructions(win, info, calibration_data=None):
         if domain == 'Money':
             penalty_text = f"If you do NOT complete the task, you will always (100%)\nwin $0"
         else:
-            penalty_text = f"If you do NOT complete the task, you will always (100%)\nwin 0 snacks"
+            penalty_text = f"If you do NOT complete the task, you will always (100%)\nwin 0 {unit_plural}"
     
     instructions.append({
         'main_text': penalty_text,
@@ -224,16 +232,16 @@ def run_instructions(win, info, calibration_data=None):
     else:  # Food
         if valence == 'Loss':
             payment_text = (f"At the end of the task, ONE of the trials you played will be\n"
-                          f"randomly selected and deducted from your {endowment} snack\n"
-                          f"endowment. Any snacks remaining after this\n"
+                          f"randomly selected and deducted from your {endowment} {unit_plural}\n"
+                          f"endowment. Any {unit_plural} remaining after this\n"
                           f"deduction will be yours to take home.\n\n"
                           f"In other words, your performance on this task determines\n"
-                          f"how many snacks you can take home.")
+                          f"how many {unit_plural} you can take home.")
         else:  # Gain
             payment_text = (f"At the end of the task, ONE of the trials you played will be\n"
-                          f"randomly selected and you will receive that many snacks.\n\n"
+                          f"randomly selected and you will receive that many {unit_plural}.\n\n"
                           f"In other words, your performance on this task determines\n"
-                          f"how many snacks you can take home.")
+                          f"how many {unit_plural} you can take home.")
     
     instructions.append({
         'main_text': payment_text,
@@ -312,14 +320,14 @@ def display_instruction_screen(win, instruction):
             fillColor=[0.6, 0.6, 0.6],
             lineColor='red' if instruction.get('highlight_easy') else 'white',
             lineWidth=3 if instruction.get('highlight_easy') else 1,
-            pos=(-0.35, -0.15)  # Moved down from -0.1 to -0.15
+            pos=(-0.35, -0.15)
         )
         elements.append(easy_box)
         
         easy_label = visual.TextStim(
             win,
             text="Easy",
-            pos=(-0.35, -0.10),  # Moved down from -0.05 to -0.10
+            pos=(-0.35, -0.10),
             height=0.035,
             color='black',
             bold=True
@@ -329,7 +337,7 @@ def display_instruction_screen(win, instruction):
         easy_value = visual.TextStim(
             win,
             text=instruction['demo_easy_value'],
-            pos=(-0.35, -0.20),  # Moved down from -0.15 to -0.20
+            pos=(-0.35, -0.20),
             height=0.04,
             color='black'
         )
@@ -338,7 +346,7 @@ def display_instruction_screen(win, instruction):
         easy_key = visual.TextStim(
             win,
             text="(left arrow key)",
-            pos=(-0.35, -0.28),  # Moved down from -0.23 to -0.28
+            pos=(-0.35, -0.28),
             height=0.025,
             color='white'
         )
@@ -352,14 +360,14 @@ def display_instruction_screen(win, instruction):
             fillColor=[0.6, 0.6, 0.6],
             lineColor='red' if instruction.get('highlight_hard') else 'white',
             lineWidth=3 if instruction.get('highlight_hard') else 1,
-            pos=(0.35, -0.15)  # Already at -0.15
+            pos=(0.35, -0.15)
         )
         elements.append(hard_box)
         
         hard_label = visual.TextStim(
             win,
             text="Hard",
-            pos=(0.35, -0.10),  # Moved down from -0.05 to -0.10
+            pos=(0.35, -0.10),
             height=0.035,
             color='black',
             bold=True
@@ -369,7 +377,7 @@ def display_instruction_screen(win, instruction):
         hard_value = visual.TextStim(
             win,
             text=instruction['demo_hard_value'],
-            pos=(0.35, -0.20),  # Moved down from -0.1 to -0.20
+            pos=(0.35, -0.20),
             height=0.04,
             color='black'
         )
@@ -378,7 +386,7 @@ def display_instruction_screen(win, instruction):
         hard_key = visual.TextStim(
             win,
             text="(right arrow key)",
-            pos=(0.35, -0.28),  # Moved down from -0.23 to -0.28
+            pos=(0.35, -0.28),
             height=0.025,
             color='white'
         )
@@ -401,13 +409,13 @@ def display_instruction_screen(win, instruction):
             progress_label = visual.TextStim(
                 win,
                 text=instruction['progress_text'],
-                pos=(0, 0.05), # was 0.1
+                pos=(0, 0.05),
                 height=0.035,  
                 color='white'
             )
             elements.append(progress_label)
         
-        # Progress bar background -> smaller vertical bar like in practice trials
+        # Progress bar background 
         progress_bg = visual.Rect(
             win,
             width=0.1,
@@ -426,17 +434,17 @@ def display_instruction_screen(win, instruction):
             win,
             width=0.1,
             height=new_height,
-            fillColor='blue',  # Match practice trials
+            fillColor='blue',
             lineColor=None,
             pos=(0, -0.2 - (bar_height - new_height) / 2)  
         )
         elements.append(progress_fill)
         
-        # Percentage text - positioned like in practice trials
+        # Percentage text 
         percent_text = visual.TextStim(
             win,
             text="37%",
-            pos=(0.15, -0.2),  # Aligned with center of progress bar
+            pos=(0.15, -0.2),
             height=0.035,
             color='white',
             bold=True
