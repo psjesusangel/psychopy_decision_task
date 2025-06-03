@@ -24,29 +24,28 @@ def run_practice_trials(win, info):
     handedness = info['handedness']
     easy_clicks_required = info['easy_clicks_required']
     hard_clicks_required = info['hard_clicks_required']
+    domain = info['domain']
+    valence = info['valence']
     dominant_hand = handedness.upper()
     
-    # Get non-dominant hand --> Consider moving to main later
+    # Get non-dominant hand
     non_dominant_hand = "LEFT" if dominant_hand == "RIGHT" else "RIGHT"
-    
-    # List to store trial data
-    practice_data = []
     
     # Run all three practice trials using config parameters
     for trial_num, trial_config in enumerate(PRACTICE_TRIALS, 1):
-        trial_data = run_practice_trial(
+        run_practice_trial(
             win, 
             trial_num, 
             trial_config['prob'], 
             trial_config['magnitude_hard'],
             non_dominant_hand,
             easy_clicks_required,
-            hard_clicks_required
+            hard_clicks_required,
+            domain,
+            valence
         )
-        
-    # Don't track practice trials anymore (for now)
 
-def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant_hand, easy_clicks_required, hard_clicks_required):
+def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant_hand, easy_clicks_required, hard_clicks_required, domain, valence):
     """
     Run a single practice trial with given parameters.
     
@@ -56,103 +55,100 @@ def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant
     trial_num : int
         Trial number (1, 2, or 3)
     probability : float
-        Probability of loss
+        Probability of loss/gain
     magnitude_hard : float
         Magnitude for the hard option
     non_dominant_hand : str
         The participant's non-dominant hand
+    easy_clicks_required : int
+        Number of clicks required for easy task
     hard_clicks_required : int
         Number of clicks required for the hard task
+    domain : str
+        'Money' or 'Food'
+    valence : str
+        'Gain' or 'Loss'
         
     Returns:
     dict
         Dictionary containing trial data
     """
-    # Initialize trial data dictionary
-    trial_data = {
-        'trial_num': trial_num,
-        'trial_type': 'practice',
-        'magnitude_hard': magnitude_hard,
-        'probability': probability,
-        'EV': magnitude_hard * probability,
-        'choice': None,
-        'choice_rt': None,
-        'n_clicks_required': None,
-        'n_clicks_executed': 0,
-        'task_complete': 0
-    }
-    
     # Show fixation cross
-    show_fixation(win, trial_num)
+    show_fixation(win)
     
     # Show choice screen and get response
-    choice, choice_rt = show_choice_screen(win, trial_num, probability, magnitude_hard)
-    trial_data['choice'] = choice
-    trial_data['choice_rt'] = choice_rt
+    choice, choice_rt = show_choice_screen(win, probability, magnitude_hard, domain, valence)
     
     # Show ready screen
     show_ready_screen(win)
     
     # Execute the chosen task
     if choice == 'easy':
-        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num)
-        trial_data['n_clicks_required'] = easy_clicks_required
+        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, easy_clicks_required)
     else:
-        task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num)
-        trial_data['n_clicks_required'] = hard_clicks_required
-    
-    trial_data['n_clicks_executed'] = clicks_executed
-    trial_data['task_complete'] = 1 if task_complete else 0
+        task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required)
     
     # Show task completion status
     show_completion_status(win, task_complete)
-    
-    return trial_data
 
-def show_fixation(win, trial_num):
-    """Show fixation cross with practice trial text."""
+def show_fixation(win):
+    """Show fixation cross."""
     fixation = visual.TextStim(win, text="+", height=0.08, color='white')
-#    trial_text = visual.TextStim(
-#        win, 
-#        text=f"Practice trial\n{trial_num}", 
-#        pos=(0, -0.15), 
-#        height=0.05, 
-#        color='white'
-#    )
-    
     fixation.draw()
-    # trial_text.draw()
     win.flip()
     core.wait(1.0)
 
-def show_choice_screen(win, trial_num, probability, magnitude_hard):
+def show_choice_screen(win, probability, magnitude_hard, domain, valence):
     """
     Display choice screen and get participant's response.
+    
+    Parameters:
+    win : psychopy.visual.Window
+        Window to display stimuli
+    probability : float
+        Probability of loss/gain
+    magnitude_hard : float
+        Magnitude for hard option
+    domain : str
+        'Money' or 'Food'
+    valence : str
+        'Gain' or 'Loss'
     
     Returns:
     (str, float)
         Tuple of (choice, reaction_time)
     """
+    # Set correct easy values and display format based on valence
+    if valence == 'Loss':
+        easy_value = 4.00
+        if domain == 'Money':
+            easy_display = f"-${easy_value:.2f}"
+            hard_display = f"-${magnitude_hard:.2f}"
+            prob_label = f"Probability of loss: {int(probability * 100)}%"
+        else:  # Food
+            easy_display = f"-{int(easy_value)}"
+            hard_display = f"-{int(magnitude_hard)}"
+            prob_label = f"Probability of loss: {int(probability * 100)}%"
+    else:  # Gain
+        easy_value = 1.00
+        if domain == 'Money':
+            easy_display = f"+${easy_value:.2f}"
+            hard_display = f"+${magnitude_hard:.2f}"
+            prob_label = f"Probability of gain: {int(probability * 100)}%"
+        else:  # Food
+            easy_display = f"+{int(easy_value)}"
+            hard_display = f"+{int(magnitude_hard)}"
+            prob_label = f"Probability of gain: {int(probability * 100)}%"
+    
     # Create visual elements
     elements = []
     
-    # 5/28 Meeting: Remove headers
-#    # Trial header
-#    choice_text = visual.TextStim(
-#        win,
-#        text=f"Practice trial\n{trial_num}",
-#        pos=(0, 0.35),
-#        height=0.05,
-#        color='white'
-#    )
-#    elements.append(choice_text)
-    
-    # Gray background box for choices
+    # Gray background box for choices - full screen
     choice_bg = visual.Rect(
         win,
-        width=2.0, # was 1.4 but now fullscreen
-        height=2.0, # was 0.5 but now fullscreen
-        fillColor=[0.2, 0.2, 0.2], # dark gray
+        width=2.0,
+        height=2.0,
+        fillColor=[0.2, 0.2, 0.2],
         pos=(0, 0)
     )
     elements.append(choice_bg)
@@ -170,7 +166,7 @@ def show_choice_screen(win, trial_num, probability, magnitude_hard):
     # Probability text
     probability_text = visual.TextStim(
         win,
-        text=f"Probability of loss: {int(probability * 100)}%",
+        text=prob_label,
         pos=(0, 0.0),
         height=0.035,
         color='white'
@@ -199,14 +195,14 @@ def show_choice_screen(win, trial_num, probability, magnitude_hard):
     )
     elements.append(easy_label)
     
-    easy_value = visual.TextStim(
+    easy_value_display = visual.TextStim(
         win,
-        text="-$4",
+        text=easy_display,
         pos=(-0.35, -0.20),
         height=0.04,
         color='black'
     )
-    elements.append(easy_value)
+    elements.append(easy_value_display)
     
     easy_key = visual.TextStim(
         win,
@@ -239,14 +235,14 @@ def show_choice_screen(win, trial_num, probability, magnitude_hard):
     )
     elements.append(hard_label)
     
-    hard_value = visual.TextStim(
+    hard_value_display = visual.TextStim(
         win,
-        text=f"-${magnitude_hard:.2f}",
+        text=hard_display,
         pos=(0.35, -0.20),
         height=0.04,
         color='black'
     )
-    elements.append(hard_value)
+    elements.append(hard_value_display)
     
     hard_key = visual.TextStim(
         win,
@@ -269,8 +265,7 @@ def show_choice_screen(win, trial_num, probability, magnitude_hard):
     
     # Check for escape key
     if 'escape' in choice_keys:
-        win.close()
-        core.quit()
+        raise KeyboardInterrupt("User pressed escape during practice trial")
         
     # Record choice and reaction time
     choice = 'easy' if choice_keys[0] == 'left' else 'hard'
@@ -321,11 +316,11 @@ def show_completion_status(win, task_complete):
     )
     completion_text.draw()
     win.flip()
-    core.wait(2.0) # TODO: 2 seconds feel a little long
+    core.wait(2.0)
 
-def run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num):
+def run_easy_task(win, non_dominant_hand, easy_clicks_required):
     """
-    Run the easy task (press space bar 30 times in 7 seconds).
+    Run the easy task (press space bar X times in 7 seconds).
     
     Parameters:
     win : psychopy.visual.Window
@@ -333,9 +328,7 @@ def run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num):
     non_dominant_hand : str
         The participant's non-dominant hand
     easy_clicks_required : int
-        Number of clicks required for the hard task
-    trial_num : int
-        Trial number
+        Number of clicks required for the easy task
         
     Returns:
     (bool, int)
@@ -355,14 +348,6 @@ def run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num):
         lineColor='white',
         pos=(0, 0)
     )
-    
-#    instruction_text = visual.TextStim(
-#        win,
-#        text=f"Practice trial {trial_num}\n(easy task)",
-#        pos=(0, 0.4),
-#        height=0.05,
-#        color='white'
-#    )
     
     task_text = visual.TextStim(
         win,
@@ -386,8 +371,7 @@ def run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num):
         
         # Check for escape key
         if 'escape' in keys:
-            win.close()
-            core.quit()
+            raise KeyboardInterrupt("User pressed escape during easy task")
             
         # Count spacebar presses
         if 'space' in keys:
@@ -427,7 +411,6 @@ def run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num):
         )
         
         # Draw elements
-        # instruction_text.draw()
         progress_bar_back.draw()
         progress_bar_fill.draw()
         progress_text.draw()
@@ -443,10 +426,10 @@ def run_easy_task(win, non_dominant_hand, easy_clicks_required, trial_num):
     
     return task_complete, clicks_executed
 
-def run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num):
+def run_hard_task(win, non_dominant_hand, hard_clicks_required):
     """
     Run the hard task (press right and left arrow keys X times each in 21 seconds).
-    Split into two slides: first RIGHT, then LEFT.
+    Split into two phases: first RIGHT, then LEFT.
     
     Parameters:
     win : psychopy.visual.Window
@@ -455,8 +438,6 @@ def run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num):
         The participant's non-dominant hand
     hard_clicks_required : int
         Number of clicks required for the hard task
-    trial_num : int
-        Trial number
         
     Returns:
     (bool, int)
@@ -478,7 +459,7 @@ def run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num):
     # Phase 1: RIGHT arrow key
     task_complete_right = execute_hard_task_phase(
         win, 'right', 'RIGHT', right_clicks, clicks_per_side, 
-        trial_num, non_dominant_hand, end_time
+        non_dominant_hand, end_time
     )
     right_clicks = task_complete_right[1]
     
@@ -486,7 +467,7 @@ def run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num):
     if right_clicks >= clicks_per_side and core.getTime() < end_time:
         task_complete_left = execute_hard_task_phase(
             win, 'left', 'LEFT', left_clicks, clicks_per_side,
-            trial_num, non_dominant_hand, end_time
+            non_dominant_hand, end_time
         )
         left_clicks = task_complete_left[1]
     
@@ -497,7 +478,7 @@ def run_hard_task(win, non_dominant_hand, hard_clicks_required, trial_num):
     return task_complete, total_clicks
 
 def execute_hard_task_phase(win, key_name, key_display, current_clicks, required_clicks, 
-                           trial_num, non_dominant_hand, end_time):
+                           non_dominant_hand, end_time):
     """
     Execute one phase (LEFT or RIGHT) of the hard task.
     
@@ -517,14 +498,6 @@ def execute_hard_task_phase(win, key_name, key_display, current_clicks, required
         pos=(0, 0)
     )
     
-#    instruction_text = visual.TextStim(
-#        win,
-#        text=f"Practice trial {trial_num}\n(hard task)",
-#        pos=(0, 0.4),
-#        height=0.05,
-#        color='white'
-#    )
-    
     task_text = visual.TextStim(
         win,
         text=f"Press the {key_display} arrow key with your {non_dominant_hand} pinky finger",
@@ -539,8 +512,7 @@ def execute_hard_task_phase(win, key_name, key_display, current_clicks, required
         
         # Check for escape key
         if 'escape' in keys:
-            win.close()
-            core.quit()
+            raise KeyboardInterrupt("User pressed escape during hard task")
             
         # Count arrow presses
         if key_name in keys:
@@ -580,7 +552,6 @@ def execute_hard_task_phase(win, key_name, key_display, current_clicks, required
         )
         
         # Draw elements
-        # instruction_text.draw()
         progress_bar_back.draw()
         progress_bar_fill.draw()
         progress_text.draw()

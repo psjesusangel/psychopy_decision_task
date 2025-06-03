@@ -62,7 +62,7 @@ INCOMPLETE_TASK_PENALTY = 4.00
 # Values for different conditions
 LOSS_EASY_VALUE = 4.00
 LOSS_HARD_VALUE = 2.50
-GAIN_EASY_VALUE = 2.50
+GAIN_EASY_VALUE = 1.00 
 GAIN_HARD_VALUE = 4.00
 
 # Example probabilities shown in instructions

@@ -264,10 +264,10 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     
     # Execute the chosen task
     if choice == 'easy':
-        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, easy_clicks_required, None)
+        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, easy_clicks_required)
         trial_data['n_clicks_required'] = easy_clicks_required
     else:
-        task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required, None)
+        task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required)
         trial_data['n_clicks_required'] = hard_clicks_required
     
     trial_data['n_clicks_executed'] = clicks_executed
@@ -311,17 +311,6 @@ def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, 
     
     # Create visual elements
     elements = []
-    
-    # 5/28 Meeting: Remove headers
-#    # "Experiment" header
-#    header_text = visual.TextStim(
-#        win,
-#        text="Experiment",
-#        pos=(0, 0.35),
-#        height=0.05,
-#        color='white'
-#    )
-#    elements.append(header_text)
     
     # Gray background box for FULL background
     choice_bg = visual.Rect(
