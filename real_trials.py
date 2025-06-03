@@ -7,7 +7,7 @@ from datetime import datetime
 from psychopy import visual, event, core, logging
 from config import (
     MONEY_MAGNITUDES, FOOD_MAGNITUDES, PROBABILITIES, ITI_RANGE,
-    N_REAL_TRIALS, N_CATCH_TRIALS, CATCH_TRIAL_CONFIGS,
+    N_REAL_TRIALS_MONEY, N_REAL_TRIALS_FOOD, N_CATCH_TRIALS, CATCH_TRIAL_CONFIGS,
     LOSS_EASY_VALUE, LOSS_HARD_VALUE, GAIN_EASY_VALUE, GAIN_HARD_VALUE
 )
 from practice_trials import (
@@ -94,6 +94,7 @@ def run_real_trials(win, info):
 def generate_trial_list(domain, valence):
     """
     Generate list of trial parameters based on domain and valence.
+    Every participant gets the same set of trials, only the order is randomized.
     
     Parameters:
     domain : str
@@ -109,49 +110,33 @@ def generate_trial_list(domain, valence):
     
     # Generate regular trials
     if domain == 'Money':
-        # For money: Create all possible combinations
-        all_combinations = []
-        for mag in MONEY_MAGNITUDES:
+        # For money: Use first 14 magnitudes (1.00 to 3.99) × 3 probabilities = 42 trials
+        money_magnitudes_14 = MONEY_MAGNITUDES[:14]  # Exclude the 4.00 value
+        
+        for mag in money_magnitudes_14:
             for prob in PROBABILITIES:
-                all_combinations.append({
+                trial_list.append({
                     'magnitude_hard': mag,
                     'probability': prob,
                     'is_catch': False
                 })
         
-        # Randomly select 39 trials (since we have 45 combinations)
-        # But we need to ensure we actually have enough combinations
-        num_trials_needed = min(N_REAL_TRIALS, len(all_combinations))
-        regular_trials = random.sample(all_combinations, num_trials_needed)
-        trial_list.extend(regular_trials)
+        # Should have exactly 42 regular trials (14 × 3)
         
     else:  # Food
-        # For food: Need to repeat to get to 39 trials
-        # Each combination appears ~3 times (39 / 12 ≈ 3.25)
-        base_combinations = []
+        # For food: 4 magnitudes × 3 probabilities × 3 repetitions = 36 trials
         for mag in FOOD_MAGNITUDES:
             for prob in PROBABILITIES:
-                base_combinations.append({
-                    'magnitude_hard': mag,
-                    'probability': prob,
-                    'is_catch': False
-                })
+                for _ in range(3):  # Exactly 3 repetitions of each combination
+                    trial_list.append({
+                        'magnitude_hard': mag,
+                        'probability': prob,
+                        'is_catch': False
+                    })
         
-        # Repeat combinations to reach 39 trials
-        regular_trials = []
-        full_repeats = N_REAL_TRIALS // len(base_combinations)
-        remainder = N_REAL_TRIALS % len(base_combinations)
-        
-        # Add full repeats
-        for _ in range(full_repeats):
-            regular_trials.extend(base_combinations)
-        
-        # Add remainder
-        regular_trials.extend(random.sample(base_combinations, remainder))
-        
-        trial_list.extend(regular_trials)
+        # Should have exactly 36 regular trials (4 × 3 × 3)
     
-    # Add catch trials
+    # Add catch trials (same for both domains)
     catch_config = CATCH_TRIAL_CONFIGS[valence]
     for _ in range(N_CATCH_TRIALS):
         trial_list.append({

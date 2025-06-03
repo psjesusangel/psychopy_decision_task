@@ -5,7 +5,7 @@ Entry point for the effort-based decision task experiment.
 import os
 import sys
 from psychopy import visual, core, event, logging
-from config import N_REAL_TRIALS, N_CATCH_TRIALS
+from config import N_REAL_TRIALS_MONEY, N_REAL_TRIALS_FOOD, N_CATCH_TRIALS
 from utils import setup_logging, create_data_file, count_trials_in_file
 from subject_info import get_subject_info
 import calibration
@@ -163,13 +163,13 @@ def main():
         try:
             run_real_trials(win, info)
             # If we reach here, experiment completed successfully
-            expected_trials = N_REAL_TRIALS + N_CATCH_TRIALS
+            expected_trials = (N_REAL_TRIALS_MONEY if info['domain'] == 'Money' else N_REAL_TRIALS_FOOD) + N_CATCH_TRIALS
             actual_trials = count_trials_in_file(data_file_path)
             logging.data(f'[STRUCTURE] Experiment completed successfully - {actual_trials} trials saved')
         except KeyboardInterrupt:
             # Handle early termination from real trials
             logging.data("Experiment terminated during main trials")
-            expected_trials = N_REAL_TRIALS + N_CATCH_TRIALS
+            expected_trials = (N_REAL_TRIALS_MONEY if info['domain'] == 'Money' else N_REAL_TRIALS_FOOD) + N_CATCH_TRIALS
             actual_trials = count_trials_in_file(data_file_path)
             
             logging.data(f"[STRUCTURE] Expected: {expected_trials}, Actual: {actual_trials}")

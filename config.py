@@ -3,8 +3,8 @@ config.py
 Global configuration parameters for the effort-based decision task experiment 
 """
 
-# Number of trials per block (not currently used in practice trials)
-N_REAL_TRIALS = 39
+N_REAL_TRIALS_MONEY = 42  # 14 values × 3 probabilities
+N_REAL_TRIALS_FOOD = 36   # 4 values × 3 probabilities × 3 repetitions
 
 # Number of catch trials
 N_CATCH_TRIALS = 3
