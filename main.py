@@ -161,24 +161,26 @@ def main():
         instructions.run_instructions(win, info)
         
         # Practice trials
+        practice_rounds_completed = 0
         if info['practice_trials']:
-            show_phase_transition(win, "Practice Trials")  
-            logging.data('[STRUCTURE] Running practice trials')
-            practice_trials.run_practice_trials(win, info)
-            
-            # After practice trials, show option to continue or repeat
-            practice_end_text = visual.TextStim(
-                win,
-                text=(
-                    "End of practice trials. Please wait for the experimenter.\n\n"
-                    "Press SPACE to begin experiment\n"
-                    "Press ENTER to repeat practice trials"
-                ),
-                color='white', height=0.05, wrapWidth=1.5
-            )
-            
-            # Loop until participant chooses to continue
-            while True:
+            while True:  # Loop for repeated practice trials
+                practice_rounds_completed += 1
+                show_phase_transition(win, f"Practice Trials (Round {practice_rounds_completed})")
+                logging.data(f'[STRUCTURE] Running practice trials - Round {practice_rounds_completed}')
+                practice_trials.run_practice_trials(win, info)
+                
+                # After practice trials, show option to continue or repeat
+                practice_end_text = visual.TextStim(
+                    win,
+                    text=(
+                        f"End of practice trials (Round {practice_rounds_completed}). Please wait for the experimenter.\n\n"
+                        "Press SPACE to begin experiment\n"
+                        "Press ENTER to repeat practice trials"
+                    ),
+                    color='white', height=0.05, wrapWidth=1.5
+                )
+                
+                # Show choice and get response
                 practice_end_text.draw()
                 win.flip()
                 
@@ -193,12 +195,18 @@ def main():
                     # Continue to main experiment
                     break
                 elif 'return' in keys:
-                    # Repeat practice trials
-                    show_phase_transition(win, "Practice Trials")  
+                    # Continue loop to repeat practice trials
                     logging.data('[STRUCTURE] Repeating practice trials')
-                    practice_trials.run_practice_trials(win, info)
+                    continue
         else:
+            practice_rounds_completed = 0
             logging.data('[STRUCTURE] Skipping practice trials')
+        
+        # Store practice rounds completed in info for CSV logging
+        info['practice_rounds_completed'] = practice_rounds_completed
+        
+        # Log final practice count
+        logging.data(f'[STRUCTURE] Practice trials completed: {practice_rounds_completed} rounds')
         
         # Main experiment
         show_phase_transition(win, "Main Experiment")  

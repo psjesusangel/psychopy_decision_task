@@ -61,8 +61,8 @@ def setup_logging(info=None, log_dir='logs'):
 def create_data_file(filepath):
     """Create empty CSV file with headers."""
     headers = [
-        'date', 'time', 'subject', 'handedness', 'trial_num', 
-        'domain', 'valence', 'magnitude_hard', 'probability', 'EV',
+        'date', 'time', 'subject', 'handedness', 'practice_rounds_completed', 'trial_num', 
+        'domain', 'valence', 'snack_choice', 'magnitude_hard', 'probability', 'EV',
         'choice', 'choice_rt', 'n_clicks_required', 'n_clicks_executed', 
         'task_complete', 'is_catch', 'trial_type'
     ]

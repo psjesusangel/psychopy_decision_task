@@ -71,7 +71,8 @@ def run_real_trials(win, info):
                 easy_clicks_required, 
                 hard_clicks_required,
                 subject_number,
-                handedness
+                handedness,
+                info
             )
             
             # Save trial data immediately
@@ -160,7 +161,7 @@ def show_experiment_start(win):
     core.wait(1.0)
 
 def run_single_trial(win, trial_num, trial_params, domain, valence, 
-                    non_dominant_hand, easy_clicks_required, hard_clicks_required, subject_number, handedness):
+                    non_dominant_hand, easy_clicks_required, hard_clicks_required, subject_number, handedness, info):
     """
     Run a single experimental trial.
     
@@ -216,9 +217,11 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
         'time': datetime.now().strftime('%H:%M:%S'),
         'subject': subject_number,
         'handedness': handedness,
+        'practice_rounds_completed': info.get('practice_rounds_completed', 0),
         'trial_num': trial_num,
         'domain': domain,
         'valence': valence,
+        'snack_choice': info.get('snack_choice', 'N/A'),
         'magnitude_hard': magnitude_hard,
         'probability': probability,
         'EV': ev,
