@@ -58,7 +58,7 @@ def run_real_trials(win, info):
     try: 
         for trial_num, trial_params in enumerate(trial_list, 1):
             # Show fixation with ITI
-            show_fixation(win, trial_num)
+            show_fixation(win)
             
             # Run the trial
             trial_data = run_single_trial(
