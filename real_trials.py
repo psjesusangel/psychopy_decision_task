@@ -58,7 +58,7 @@ def run_real_trials(win, info):
     try: 
         for trial_num, trial_params in enumerate(trial_list, 1):
             # Show fixation with ITI
-            show_trial_fixation(win, trial_num)
+            show_fixation(win, trial_num)
             
             # Run the trial
             trial_data = run_single_trial(
@@ -158,13 +158,6 @@ def show_experiment_start(win):
     start_text.draw()
     win.flip()
     core.wait(1.0)
-
-def show_trial_fixation(win, trial_num):
-    """Show fixation cross for experimental trials."""
-    fixation = visual.TextStim(win, text="+", height=0.08, color='white')
-    fixation.draw()
-    win.flip()
-    # Note: ITI is handled in main loop, this is just the fixation display
 
 def run_single_trial(win, trial_num, trial_params, domain, valence, 
                     non_dominant_hand, easy_clicks_required, hard_clicks_required, subject_number, handedness):
@@ -307,11 +300,20 @@ def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, 
     )
     elements.append(choice_bg)
     
+    fixation = visual.TextStim(
+        win, 
+        text="+", 
+        height=0.08, 
+        color='white',
+        pos=(0, 0) 
+    )
+    elements.append(fixation)
+
     # "Please choose a task:" text
     instructions = visual.TextStim(
         win,
         text="Please choose a task:",
-        pos=(0, 0.1),
+        pos=(0, 0.25),
         height=0.04,
         color='white'
     )
@@ -321,7 +323,7 @@ def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, 
     probability_text = visual.TextStim(
         win,
         text=prob_label,
-        pos=(0, 0.0),
+        pos=(0, 0.15),
         height=0.035,
         color='white'
     )

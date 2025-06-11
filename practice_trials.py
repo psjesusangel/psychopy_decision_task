@@ -152,12 +152,22 @@ def show_choice_screen(win, probability, magnitude_hard, domain, valence):
         pos=(0, 0)
     )
     elements.append(choice_bg)
+
+    # Keep fixation
+    fixation = visual.TextStim(
+        win, 
+        text="+", 
+        height=0.08, 
+        color='white',
+        pos=(0, 0) 
+    )
+    elements.append(fixation)
     
     # "Please choose a task:" text
     instructions = visual.TextStim(
         win,
         text="Please choose a task:",
-        pos=(0, 0.1),
+        pos=(0, 0.25), # y was 0.1
         height=0.04,
         color='white'
     )
@@ -167,7 +177,7 @@ def show_choice_screen(win, probability, magnitude_hard, domain, valence):
     probability_text = visual.TextStim(
         win,
         text=prob_label,
-        pos=(0, 0.0),
+        pos=(0, 0.15), # y was 0.0
         height=0.035,
         color='white'
     )
