@@ -13,6 +13,44 @@ import instructions
 import practice_trials
 from real_trials import run_real_trials
 
+def show_phase_transition(win, phase_name, duration=1.5):
+    """
+    Display a phase transition screen.
+    
+    Parameters:
+    win : psychopy.visual.Window
+        Window to display stimuli
+    phase_name : str
+        Name of the phase being entered
+    duration : float
+        How long to display the screen (seconds)
+    """
+    # Create phase transition text
+    phase_text = visual.TextStim(
+        win,
+        text=f"Entering {phase_name} Phase",
+        height=0.06,
+        color='white',
+        bold=True
+    )
+    
+    # Add exit instruction text (consistent with other screens)
+    exit_instructions = visual.TextStim(
+        win, 
+        text="To exit: Press the ESC key",
+        pos=(0, -0.45),
+        height=0.025,
+        color='grey'
+    )
+    
+    # Draw and display
+    phase_text.draw()
+    exit_instructions.draw()
+    win.flip()
+    
+    # Wait for specified duration
+    core.wait(duration)
+
 def main():
     """
     Main experimental function that runs through all experimental stages.
@@ -70,6 +108,7 @@ def main():
         handedness = info['handedness'].lower()
         
         # Calibration phase
+        show_phase_transition(win, "Calibration")  
         logging.data('[STRUCTURE] Running right-hand calibration')
         
         # Run the calibration with non-dominant hand (based on handedness)
@@ -117,11 +156,13 @@ def main():
             return
         
         # Run instructions
+        show_phase_transition(win, "Instructions") 
         logging.data('[STRUCTURE] Running instructions')
         instructions.run_instructions(win, info)
         
         # Practice trials
         if info['practice_trials']:
+            show_phase_transition(win, "Practice Trials")  
             logging.data('[STRUCTURE] Running practice trials')
             practice_trials.run_practice_trials(win, info)
             
@@ -153,12 +194,14 @@ def main():
                     break
                 elif 'return' in keys:
                     # Repeat practice trials
+                    show_phase_transition(win, "Practice Trials")  
                     logging.data('[STRUCTURE] Repeating practice trials')
                     practice_trials.run_practice_trials(win, info)
         else:
             logging.data('[STRUCTURE] Skipping practice trials')
         
         # Main experiment
+        show_phase_transition(win, "Main Experiment")  
         logging.data('[STRUCTURE] Running main experimental trials')
         try:
             run_real_trials(win, info)
