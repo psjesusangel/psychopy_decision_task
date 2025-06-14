@@ -131,13 +131,13 @@ def main():
         logging.data(f'[DATA] Left-key clicks: {left_count}')
         
         # Compute hard click requirement (0.8 * sum of both hands)
-        hard_clicks_required = int(0.8 * (right_count + left_count))
+        hard_clicks_required = max(1, int(0.8 * (right_count + left_count))) # Should always require at least one click!
         info['hard_clicks_required'] = hard_clicks_required
         logging.data(f'[DATA] Hard clicks required: {hard_clicks_required}')
         
         # Compute easy click requirement (0.20 * max clicks from hard calibration)
         max_calibration_clicks = max(left_count, right_count)
-        easy_clicks_required = int(0.2 * max_calibration_clicks)
+        easy_clicks_required = max(1, int(0.2 * max_calibration_clicks)) # Should always require at least one click!
         info['easy_clicks_required'] = easy_clicks_required
         logging.data(f'[DATA] Easy clicks required: {easy_clicks_required}')
         
