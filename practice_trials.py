@@ -305,18 +305,37 @@ def show_choice_screen(win, probability, magnitude_hard, domain, valence):
 
 def show_ready_screen(win):
     """Display ready screen."""
+    # Add grey background
+    ready_bg = visual.Rect(
+        win,
+        width=2.0,
+        height=2.0,
+        fillColor=[0.2, 0.2, 0.2],
+        pos=(0, 0)
+    )
+
     ready_text = visual.TextStim(
         win,
         text="Ready?",
         height=0.08,
         color='white'
     )
+    ready_bg.draw()
     ready_text.draw()
     win.flip()
     core.wait(1.0)
 
 def show_completion_status(win, task_complete):
     """Display task completion status."""
+    # Add grey background
+    status_bg = visual.Rect(
+        win,
+        width=2.0,
+        height=2.0,
+        fillColor=[0.2, 0.2, 0.2],
+        pos=(0, 0)
+    )
+
     status_text = "complete" if task_complete else "incomplete"
     completion_text = visual.TextStim(
         win,
@@ -324,6 +343,7 @@ def show_completion_status(win, task_complete):
         height=0.08,
         color='white'
     )
+    status_bg.draw()
     completion_text.draw()
     win.flip()
     core.wait(2.0)

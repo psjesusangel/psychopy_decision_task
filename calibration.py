@@ -40,14 +40,25 @@ def run_calibration(win, hand='right', handedness='right'):
         text="To exit: Press the ESC key",
         pos=(0, -0.45),      # Position at bottom of screen
         height=0.025,        # Smaller text
-        color='grey'         # Less prominent color
+        color=[0.7, 0.7, 0.7]
     )
     
     # Intro screen with non-dominant hand instruction
     instr = (f"Get ready to press the {arrow_key.upper()} arrow key with your NON-DOMINANT ({physical_hand}) pinky.\n\n"
              f"Press SPACE to begin.")
     
+    # Add grey background
+    intro_bg = visual.Rect(
+        win,
+        width=2.0,
+        height=2.0,
+        fillColor=[0.2, 0.2, 0.2],
+        pos=(0, 0)
+    )
+
     text_stim = visual.TextStim(win, text=instr, color='white', height=0.05, wrapWidth=1.5)
+
+    intro_bg.draw()
     text_stim.draw()
     exit_instructions.draw()
     win.flip()
@@ -59,7 +70,17 @@ def run_calibration(win, hand='right', handedness='right'):
     
     # 3–2–1–GO countdown
     for cnt in [3, 2, 1]:
+        # Add grey background for countdown
+        countdown_bg = visual.Rect(
+            win,
+            width=2.0,
+            height=2.0,
+            fillColor=[0.2, 0.2, 0.2],
+            pos=(0, 0)
+        )
+
         text_stim.text = str(cnt)
+        countdown_bg.draw()  # Draw background first
         text_stim.draw()
         exit_instructions.draw()
         win.flip()
@@ -121,8 +142,19 @@ def run_calibration(win, hand='right', handedness='right'):
     # Log final count
     logging.data(f"[STRUCTURE] Calibration completed - Final count: {count}")
     
+    # Add grey background
+    completion_bg = visual.Rect(
+        win,
+        width=2.0,
+        height=2.0,
+        fillColor=[0.2, 0.2, 0.2],
+        pos=(0, 0)
+    )
+
     # Add a short pause after calibration
     text_stim.text = f"Calibration complete: {count} presses\n\nPress SPACE to continue."
+
+    completion_bg.draw()
     text_stim.draw()
     exit_instructions.draw()
     win.flip()

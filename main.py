@@ -25,6 +25,16 @@ def show_phase_transition(win, phase_name, duration=1.5):
     duration : float
         How long to display the screen (seconds)
     """
+
+    # Add grey background
+    phase_bg = visual.Rect(
+        win,
+        width=2.0,
+        height=2.0,
+        fillColor=[0.2, 0.2, 0.2],
+        pos=(0, 0)
+    )
+
     # Create phase transition text
     phase_text = visual.TextStim(
         win,
@@ -40,10 +50,11 @@ def show_phase_transition(win, phase_name, duration=1.5):
         text="To exit: Press the ESC key",
         pos=(0, -0.45),
         height=0.025,
-        color='grey'
+        color=[0.7, 0.7, 0.7]
     )
     
     # Draw and display
+    phase_bg.draw()
     phase_text.draw()
     exit_instructions.draw()
     win.flip()
@@ -90,7 +101,7 @@ def main():
         # Initialize window 
         win = visual.Window(
             fullscr=True,
-            color='black',     
+            color=[0.2, 0.2, 0.2],  # change to grey
             units='height',      
             allowGUI=True        
         )
@@ -101,7 +112,7 @@ def main():
             text="To exit: Press the ESC key",
             pos=(0, -0.45),      # Position at bottom of screen
             height=0.025,        # Smaller text
-            color='grey'         # Less prominent color
+            color=[0.7, 0.7, 0.7]
         )
         
         # Get user's handedness from info
@@ -131,6 +142,15 @@ def main():
         logging.data(f'[DATA] Easy clicks required: {easy_clicks_required}')
         
         # Display summary of calibration
+        # Add grey background
+        summary_bg = visual.Rect(
+            win,
+            width=2.0,
+            height=2.0,
+            fillColor=[0.2, 0.2, 0.2],
+            pos=(0, 0)
+        )
+
         summary = visual.TextStim(
             win,
             text=(
@@ -143,6 +163,7 @@ def main():
             ),
             color='white', height=0.05, wrapWidth=1.5
         )
+        summary_bg.draw()
         summary.draw()
         exit_instructions.draw()
         win.flip()
@@ -170,6 +191,15 @@ def main():
                 practice_trials.run_practice_trials(win, info)
                 
                 # After practice trials, show option to continue or repeat
+                # Add grey background
+                practice_end_bg = visual.Rect(
+                    win,
+                    width=2.0,
+                    height=2.0,
+                    fillColor=[0.2, 0.2, 0.2],
+                    pos=(0, 0)
+                )
+
                 practice_end_text = visual.TextStim(
                     win,
                     text=(
@@ -181,6 +211,7 @@ def main():
                 )
                 
                 # Show choice and get response
+                practice_end_bg.draw() 
                 practice_end_text.draw()
                 win.flip()
                 
@@ -235,11 +266,21 @@ def main():
             raise
         
         # Show completion message
+        # Add grey background
+        completion_bg = visual.Rect(
+            win,
+            width=2.0,
+            height=2.0,
+            fillColor=[0.2, 0.2, 0.2],
+            pos=(0, 0)
+        )
+
         completion = visual.TextStim(
             win,
             text="Experiment complete.\nThank you for your participation!\n\nPress SPACE to exit.",
             color='white', height=0.05, wrapWidth=1.5
         )
+        completion_bg.draw()
         completion.draw()
         exit_instructions.draw()
         win.flip()

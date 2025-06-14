@@ -278,11 +278,17 @@ def display_instruction_screen(win, instruction):
         )
         elements.append(title)
     
-    # Main text
+    if not instruction.get('show_choice_demo') and not instruction.get('show_progress_demo'):
+        # Center text for simple text-only screens
+        main_text_pos = (0, 0.0)
+    else:
+        # Original position for progress demo screens
+        main_text_pos = (0, 0.2)
+    
     main_text = visual.TextStim(
         win,
         text=instruction['main_text'],
-        pos=(0, 0.2),
+        pos=main_text_pos,  # Use the conditional position
         height=0.04,
         color='white',
         wrapWidth=1.8,

@@ -150,12 +150,22 @@ def generate_trial_list(domain, valence):
 
 def show_experiment_start(win):
     """Show experiment start screen."""
+    # Add grey background
+    start_bg = visual.Rect(
+        win,
+        width=2.0,
+        height=2.0,
+        fillColor=[0.2, 0.2, 0.2],
+        pos=(0, 0)
+    )
+
     start_text = visual.TextStim(
         win,
         text="+\n\nExperiment",
         height=0.06,
         color='white'
     )
+    start_bg.draw()
     start_text.draw()
     win.flip()
     core.wait(1.0)
