@@ -46,7 +46,7 @@ def run_instructions(win, info, calibration_data=None):
     else:  # Food
         unit = ''
         snack_name = info.get('snack_choice', 'snacks')  # Get chosen snack or default to 'snacks'
-        unit_plural = snack_name.lower()  # Use the chosen snack name
+        unit_plural = f"{snack_name.lower()} packs" 
         endowment = ENDOWMENT_FOOD
         endowment_text = f'{endowment} {unit_plural}'
         incomplete_penalty = f'{int(INCOMPLETE_TASK_PENALTY)} {unit_plural}'
@@ -192,15 +192,18 @@ def run_instructions(win, info, calibration_data=None):
         'bottom_text': "Press spacebar to continue"
     })
     
-    # Screen 8: Incomplete task penalty
+    # Screen 8: Incomplete task penalty  
     if valence == 'Loss':
-        penalty_text = f"If you do NOT complete the task, you will always (100%)\nlose {incomplete_penalty}"
-    else:
         if domain == 'Money':
-            penalty_text = f"If you do NOT complete the task, you will always (100%)\nwin $0"
-        else:
+            penalty_text = f"If you do NOT complete the task, you will always (100%)\nlose $4.00"
+        else:  # Food
+            penalty_text = f"If you do NOT complete the task, you will always (100%)\nlose 4 {unit_plural}"
+    else:  # Gain
+        if domain == 'Money':
+            penalty_text = f"If you do NOT complete the task, you will always (100%)\nwin $0.00"
+        else:  # Food
             penalty_text = f"If you do NOT complete the task, you will always (100%)\nwin 0 {unit_plural}"
-    
+        
     instructions.append({
         'main_text': penalty_text,
         'bottom_text': "Press spacebar to continue"
@@ -245,8 +248,16 @@ def run_instructions(win, info, calibration_data=None):
     
     instructions.append({
         'main_text': payment_text,
-        'bottom_text': "Press enter to begin",
-        'wait_key': 'return'
+        'bottom_text': "Press spacebar to continue",
+    })
+
+    # Screen 11: Positioning reminder  
+    instructions.append({
+    'main_text': ("Once you start the experiment, please do not move.\n\n"
+                  "It is important that your chair, forearms, and hands\n"
+                  "remain in the same position for the duration of today's session."),
+    'bottom_text': "Press enter to begin",
+    'wait_key': 'return'
     })
     
     # Display each instruction screen

@@ -73,6 +73,10 @@ def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant
     dict
         Dictionary containing trial data
     """
+
+    # TODO: Calculate dominant hand from non-dominant (REDUNDANT)
+    dominant_hand = "RIGHT" if non_dominant_hand == "LEFT" else "LEFT" 
+
     # Show fixation cross
     show_fixation(win)
     
@@ -84,7 +88,7 @@ def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant
     
     # Execute the chosen task
     if choice == 'easy':
-        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, easy_clicks_required)
+        task_complete, clicks_executed = run_easy_task(win, dominant_hand, easy_clicks_required) #
     else:
         task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required)
     
@@ -348,15 +352,15 @@ def show_completion_status(win, task_complete):
     win.flip()
     core.wait(2.0)
 
-def run_easy_task(win, non_dominant_hand, easy_clicks_required):
+def run_easy_task(win, dominant_hand, easy_clicks_required):
     """
     Run the easy task (press space bar X times in 7 seconds).
     
     Parameters:
     win : psychopy.visual.Window
         Window to display stimuli
-    non_dominant_hand : str
-        The participant's non-dominant hand
+    dominant_hand : str
+        The participant's dominant hand
     easy_clicks_required : int
         Number of clicks required for the easy task
         
@@ -381,7 +385,7 @@ def run_easy_task(win, non_dominant_hand, easy_clicks_required):
     
     task_text = visual.TextStim(
         win,
-        text=f"Press the space bar with your {non_dominant_hand} index finger",
+        text=f"Press the space bar with your {dominant_hand} index finger",
         pos=(0, -0.4),
         height=0.05,
         color='white'
