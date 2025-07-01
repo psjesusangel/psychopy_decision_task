@@ -81,11 +81,20 @@ def run_instructions(win, info, calibration_data=None):
     instructions = []
     
     # Screen 1: Introduction
+    if valence == 'Loss':
+        intro_text = (f"You will start with 8 {unit_plural} endowment.\n"
+                    f"You will choose to complete either an easy task, which risks a larger loss\n"
+                    f"from this endowment, or a hard task, which risks a smaller loss from the endowment.\n"
+                    f"The screen will look like this:")
+    else:  # Gain
+        intro_text = (f"You will start with 8 {unit_plural} endowment.\n"
+                    f"You will choose to complete either an easy task, which risks a smaller gain\n"
+                    f"to this endowment, or a hard task, which risks a larger gain to the endowment.\n"
+                    f"The screen will look like this:")
+        
     instructions.append({
         'title': 'Instructions',
-        'main_text': (f"You will start this task with {endowment_text}. On each\n"
-                     f"trial, you will choose to complete an easy task or a hard task.\n"
-                     f"The screen will look like this:"),
+        'main_text': intro_text,
         'show_choice_demo': True,
         'demo_easy_value': easy_display,
         'demo_hard_value': hard_display,
@@ -138,7 +147,7 @@ def run_instructions(win, info, calibration_data=None):
     # Screen 4: Easy task details
     instructions.append({
         'main_text': (f"The EASY task requires you to press the SPACE BAR {easy_clicks_required}\n"
-                     f"times in {int(EASY_TASK_DURATION)} seconds using the index finger of your {dominant_hand} hand"),
+                     f"times in {int(EASY_TASK_DURATION)} seconds using the index finger of your {non_dominant_hand} hand"),
         'show_progress_demo': True,
         'progress_text': "A shaded bar will indicate your progress as you complete\nthe task:",
         'bottom_text': "Press spacebar to continue"

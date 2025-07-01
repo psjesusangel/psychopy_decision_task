@@ -42,10 +42,11 @@ def run_practice_trials(win, info):
             easy_clicks_required,
             hard_clicks_required,
             domain,
-            valence
+            valence,
+            info
         )
 
-def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant_hand, easy_clicks_required, hard_clicks_required, domain, valence):
+def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant_hand, easy_clicks_required, hard_clicks_required, domain, valence, info):
     """
     Run a single practice trial with given parameters.
     
@@ -81,7 +82,7 @@ def run_practice_trial(win, trial_num, probability, magnitude_hard, non_dominant
     show_fixation(win)
     
     # Show choice screen and get response
-    choice, choice_rt = show_choice_screen(win, probability, magnitude_hard, domain, valence)
+    choice, choice_rt = show_choice_screen(win, probability, magnitude_hard, domain, valence, info)
     
     # Show ready screen
     show_ready_screen(win)
@@ -102,7 +103,7 @@ def show_fixation(win):
     win.flip()
     core.wait(1.0)
 
-def show_choice_screen(win, probability, magnitude_hard, domain, valence):
+def show_choice_screen(win, probability, magnitude_hard, domain, valence, info):
     """
     Display choice screen and get participant's response.
     
@@ -130,8 +131,10 @@ def show_choice_screen(win, probability, magnitude_hard, domain, valence):
             hard_display = f"-${magnitude_hard:.2f}"
             prob_label = f"Probability of loss: {int(probability * 100)}%"
         else:  # Food
-            easy_display = f"-{int(easy_value)}"
-            hard_display = f"-{int(magnitude_hard)}"
+            snack_name = info.get('snack_choice', 'snacks')
+            snack_packs = f"{snack_name.lower()} packs"
+            easy_display = f"-{int(easy_value)} {snack_packs}"
+            hard_display = f"-{int(magnitude_hard)} {snack_packs}"
             prob_label = f"Probability of loss: {int(probability * 100)}%"
     else:  # Gain
         easy_value = 1.00
@@ -140,8 +143,10 @@ def show_choice_screen(win, probability, magnitude_hard, domain, valence):
             hard_display = f"+${magnitude_hard:.2f}"
             prob_label = f"Probability of gain: {int(probability * 100)}%"
         else:  # Food
-            easy_display = f"+{int(easy_value)}"
-            hard_display = f"+{int(magnitude_hard)}"
+            snack_name = info.get('snack_choice', 'snacks')
+            snack_packs = f"{snack_name.lower()} packs"
+            easy_display = f"+{int(easy_value)} {snack_packs}"
+            hard_display = f"+{int(magnitude_hard)} {snack_packs}"
             prob_label = f"Probability of gain: {int(probability * 100)}%"
     
     # Create visual elements

@@ -201,6 +201,10 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     dict
         Dictionary containing all trial data
     """
+
+    # TODO: Modularize later and pass this as another parameter
+    dominant_hand = handedness.upper()
+
     # Extract trial parameters
     magnitude_hard = trial_params['magnitude_hard']
     probability = trial_params['probability']
@@ -255,7 +259,7 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     
     # Execute the chosen task
     if choice == 'easy':
-        task_complete, clicks_executed = run_easy_task(win, non_dominant_hand, easy_clicks_required)
+        task_complete, clicks_executed = run_easy_task(win, dominant_hand, easy_clicks_required)
         trial_data['n_clicks_required'] = easy_clicks_required
     else:
         task_complete, clicks_executed = run_hard_task(win, non_dominant_hand, hard_clicks_required)
