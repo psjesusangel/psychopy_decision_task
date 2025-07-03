@@ -296,12 +296,12 @@ def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, 
     else:  # Food
         snack_name = info.get('snack_choice', 'snacks')
         snack_packs = f"{snack_name.lower()} packs"
-    if valence == 'Loss':
-        easy_display = f"-{int(easy_value)} {snack_packs}"
-        hard_display = f"-{int(magnitude_hard)} {snack_packs}"
-    else:  # Gain
-        easy_display = f"+{int(easy_value)} {snack_packs}"
-        hard_display = f"+{int(magnitude_hard)} {snack_packs}"
+        if valence == 'Loss':
+            easy_display = f"-{int(easy_value)} {snack_packs}"
+            hard_display = f"-{int(magnitude_hard)} {snack_packs}"
+        else:  # Gain
+            easy_display = f"+{int(easy_value)} {snack_packs}"
+            hard_display = f"+{int(magnitude_hard)} {snack_packs}"
     
     # Set probability label based on valence
     prob_label = f"Probability of {'loss' if valence == 'Loss' else 'gain'}: {int(probability * 100)}%"
