@@ -70,8 +70,8 @@ def run_instructions(win, info, calibration_data=None):
         easy_display = f"{'-' if valence == 'Loss' else '+'}{unit}{easy_value:.2f}"
         hard_display = f"{'-' if valence == 'Loss' else '+'}{unit}{hard_value:.2f}"
     else:  # Food
-        easy_display = f"{'-' if valence == 'Loss' else '+'}{int(easy_value)}"
-        hard_display = f"{'-' if valence == 'Loss' else '+'}{int(hard_value)}"
+        easy_display = f"{'-' if valence == 'Loss' else '+'}{int(easy_value)} {unit_plural}"
+        hard_display = f"{'-' if valence == 'Loss' else '+'}{int(hard_value)} {unit_plural}"
     
     # Determine hands
     dominant_hand = handedness.upper()
