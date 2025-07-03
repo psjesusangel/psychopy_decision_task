@@ -249,7 +249,7 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     
     # Show choice screen and get response
     choice, choice_rt = show_experiment_choice_screen(
-        win, probability, magnitude_hard, easy_value, domain, valence
+        win, probability, magnitude_hard, easy_value, domain, valence, info
     )
     trial_data['choice'] = choice
     trial_data['choice_rt'] = choice_rt
@@ -277,7 +277,7 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     
     return trial_data
 
-def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, domain, valence):
+def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, domain, valence, info):
     """
     Display choice screen for experimental trials with proper formatting for domain/valence.
     
@@ -294,12 +294,14 @@ def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, 
             easy_display = f"+${easy_value:.2f}"
             hard_display = f"+${magnitude_hard:.2f}"
     else:  # Food
-        if valence == 'Loss':
-            easy_display = f"-{int(easy_value)}"
-            hard_display = f"-{int(magnitude_hard)}"
-        else:  # Gain
-            easy_display = f"+{int(easy_value)}"
-            hard_display = f"+{int(magnitude_hard)}"
+        snack_name = info.get('snack_choice', 'snacks')
+        snack_packs = f"{snack_name.lower()} packs"
+    if valence == 'Loss':
+        easy_display = f"-{int(easy_value)} {snack_packs}"
+        hard_display = f"-{int(magnitude_hard)} {snack_packs}"
+    else:  # Gain
+        easy_display = f"+{int(easy_value)} {snack_packs}"
+        hard_display = f"+{int(magnitude_hard)} {snack_packs}"
     
     # Set probability label based on valence
     prob_label = f"Probability of {'loss' if valence == 'Loss' else 'gain'}: {int(probability * 100)}%"

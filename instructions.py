@@ -147,7 +147,7 @@ def run_instructions(win, info, calibration_data=None):
     # Screen 4: Easy task details
     instructions.append({
         'main_text': (f"The EASY task requires you to press the SPACE BAR {easy_clicks_required}\n"
-                     f"times in {int(EASY_TASK_DURATION)} seconds using the index finger of your {non_dominant_hand} hand"),
+                     f"times in {int(EASY_TASK_DURATION)} seconds using the index finger of your {dominant_hand} hand"),
         'show_progress_demo': True,
         'progress_text': "A shaded bar will indicate your progress as you complete\nthe task:",
         'bottom_text': "Press spacebar to continue"
