@@ -123,6 +123,8 @@ def show_choice_screen(win, probability, magnitude_hard, domain, valence, info):
     (str, float)
         Tuple of (choice, reaction_time)
     """
+    # new line to ensure snack_packs is valid
+    snack_packs = None
     # Set correct easy values and display format based on valence
     if valence == 'Loss':
         easy_value = 4.00
@@ -279,7 +281,11 @@ def show_choice_screen(win, probability, magnitude_hard, domain, valence, info):
     
     # Wait for response and record time
     choice_start_time = core.getTime()
-    choice_keys = event.waitKeys(keyList=['left', 'right', 'escape'])
+    choice_keys = event.waitKeys(keyList=['left', 'right', 'escape'], maxWait=30.0)
+    if choice_keys is None:
+        logging.warning("No response for 30s - possible focus loss")
+        choice_keys = ['left']  
+
     choice_end_time = core.getTime()
     
     # Check for escape key

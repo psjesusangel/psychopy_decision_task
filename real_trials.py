@@ -285,6 +285,7 @@ def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, 
     (str, float)
         Tuple of (choice, reaction_time)
     """
+    snack_packs = None
     # Format values based on domain and valence
     if domain == 'Money':
         if valence == 'Loss':
@@ -435,7 +436,13 @@ def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, 
     
     # Wait for response and record time
     choice_start_time = core.getTime()
-    choice_keys = event.waitKeys(keyList=['left', 'right', 'escape'])
+    
+    # In case there is a loss of focus:
+    choice_keys = event.waitKeys(keyList=['left', 'right', 'escape'], maxWait=30.0)
+    if choice_keys is None:
+        logging.warning("No response for 30s - possible focus loss")
+        choice_keys = ['left']  # Default to easy choice for now (consult later)
+
     choice_end_time = core.getTime()
     
     # Check for escape key
