@@ -75,11 +75,12 @@ def run_real_trials(win, info):
                 info
             )
             
-            # Save trial data immediately
-            append_trial_data(info['data_file_path'], trial_data)
-            
-            # Add trial data to list
-            trial_data_list.append(trial_data)
+            # Only save if trial was completed (not skipped)
+            if trial_data is not None:
+                append_trial_data(info['data_file_path'], trial_data)
+                trial_data_list.append(trial_data)
+            else:
+                logging.data(f"Skipped saving data for trial {trial_num}")
             
             # Inter-trial interval
             iti = random.uniform(*ITI_RANGE)
@@ -251,6 +252,12 @@ def run_single_trial(win, trial_num, trial_params, domain, valence,
     choice, choice_rt = show_experiment_choice_screen(
         win, probability, magnitude_hard, easy_value, domain, valence, info
     )
+
+    # Skip trial if timeout occurred
+    if choice == 'timeout':
+        logging.data(f"Trial {trial_num} skipped due to timeout")
+        return None  # Return None to indicate skipped trial (won't log in CSV)
+
     trial_data['choice'] = choice
     trial_data['choice_rt'] = choice_rt
     
@@ -440,8 +447,8 @@ def show_experiment_choice_screen(win, probability, magnitude_hard, easy_value, 
     # In case there is a loss of focus:
     choice_keys = event.waitKeys(keyList=['left', 'right', 'escape'], maxWait=30.0)
     if choice_keys is None:
-        logging.warning("No response for 30s - possible focus loss")
-        choice_keys = ['left']  # Default to easy choice for now (consult later)
+        logging.warning("No response for 30 seconds - skipping trial due to timeout")
+        return 'timeout', 30.0  # Return special timeout indicators
 
     choice_end_time = core.getTime()
     
